@@ -99,6 +99,18 @@ Como o projeto foi projetado com arquitetura web moderna e independente de servi
 3. **Opção com Servidor Local (se desejar)**:
    Caso possua alguma extensão como Live Server no VS Code ou equivalente, basta iniciar sobre a pasta do projeto.
 
+### Publicar no Vercel
+
+O projeto da interface pode ser publicado como site estático no Vercel. Ao importar o repositório no Vercel:
+
+1. Selecione esta pasta (`Meuprojeto`) como **Root Directory**.
+2. Deixe **Framework Preset** como `Other`.
+3. Deixe **Build Command** vazio.
+4. Deixe **Output Directory** vazio.
+5. Faça o deploy.
+
+O diretório `backend/` não será enviado pela configuração atual do projeto. Ele usa PHP e não é compatível com o deploy estático do Vercel. Para habilitar os cadastros e a API, o backend PHP deve ser publicado separadamente em um servidor com PHP/PDO e o frontend deve apontar para a URL dessa API.
+
 ---
 
 ## 🇧🇷 Idioma e Localização
