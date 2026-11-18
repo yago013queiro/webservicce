@@ -337,6 +337,34 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 380px;
 }
 
+@media (max-width: 640px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  #mobile-menu-drawer {
+    overflow-y: auto;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  #chat-widget-window {
+    width: min(24rem, calc(100vw - 2rem));
+    right: -0.5rem;
+    max-height: calc(100vh - 6rem);
+  }
+
+  #toast-container {
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .toast {
+    width: 100%;
+    max-width: none;
+  }
+}
+
 @keyframes slideInToast {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }

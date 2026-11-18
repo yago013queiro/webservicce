@@ -80,26 +80,26 @@
        2. HEADER E NAVEGAÇÃO PRINCIPAL (ESTILO TECHPRO)
        ==================================================================== -->
   <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 sm:gap-4">
       
       <!-- Logotipo Estilo TechPro da Imagem 2 -->
-      <a href="#inicio" class="flex items-center gap-3 group shrink-0">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] flex items-center justify-center text-[#030A12] font-black text-xl shadow-[0_0_20px_rgba(57,189,245,0.4)] group-hover:scale-105 transition-transform">
+      <a href="#inicio" class="flex items-center gap-2 sm:gap-3 group shrink-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] flex items-center justify-center text-[#030A12] font-black text-xl shadow-[0_0_20px_rgba(57,189,245,0.4)] group-hover:scale-105 transition-transform">
           &lt;/&gt;
         </div>
         <div>
           <div class="flex items-center gap-1">
-            <span class="text-2xl font-black tracking-tight text-white font-['Outfit']">WebService</span>
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-white font-['Outfit']">WebService</span>
             <span class="w-2 h-2 rounded-full bg-[#39BDF5] glow-cyan"></span>
           </div>
           <span class="text-[9px] uppercase tracking-widest text-[#39BDF5] font-bold block -mt-1">
-            Marketplace & Delivery
+            Marketplace<span class="hidden sm:inline"> &amp; Delivery</span>
           </span>
         </div>
       </a>
 
       <!-- Menu Desktop com Traço Azul Interativo em Todos os Atalhos -->
-      <nav class="hidden lg:flex items-center gap-8 text-sm font-medium">
+      <nav class="hidden lg:flex items-center gap-4 2xl:gap-6 text-sm font-medium">
         <a href="#inicio" class="nav-item-link active">Início</a>
         <a href="#como-funciona" class="nav-item-link">Como Funciona</a>
         <a href="#categorias" class="nav-item-link">Categorias</a>
@@ -109,9 +109,9 @@
       </nav>
 
       <!-- Ações do Header (Busca, Carrinho, Login) -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <!-- Campo de Busca Compacto com Ícone -->
-        <div class="relative hidden sm:block w-48 xl:w-64">
+        <div class="relative hidden 2xl:block w-48">
           <input 
             type="text" 
             id="nav-search-input"
@@ -125,6 +125,7 @@
         <button 
           class="btn-open-cart relative p-2.5 rounded-full bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] text-white hover:text-[#39BDF5] transition-colors"
           title="Abrir carrinho de compras"
+          aria-label="Abrir carrinho de compras"
         >
           <i data-lucide="shopping-cart" class="w-5 h-5"></i>
           <span class="cart-badge hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#39BDF5] text-[#030A12] text-[11px] font-black items-center justify-center shadow-lg animate-pulse">
@@ -132,9 +133,20 @@
           </span>
         </button>
 
+        <button
+          class="btn-open-appointments relative p-2.5 rounded-full bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] text-white hover:text-[#39BDF5] transition-colors"
+          title="Ver meus agendamentos"
+          aria-label="Ver meus agendamentos"
+        >
+          <i data-lucide="calendar-check" class="w-5 h-5"></i>
+          <span class="appointment-badge hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#39BDF5] text-[#030A12] text-[11px] font-black items-center justify-center shadow-lg">
+            0
+          </span>
+        </button>
+
         <!-- Botão Entrar (Abre Modal de Login) -->
         <button 
-          class="btn-open-auth hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#162C46] bg-[#071522] hover:border-[#39BDF5] hover:bg-[#39BDF5]/10 text-white hover:text-[#39BDF5] text-xs font-bold transition-all"
+          class="btn-open-auth hidden 2xl:inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#162C46] bg-[#071522] hover:border-[#39BDF5] hover:bg-[#39BDF5]/10 text-white hover:text-[#39BDF5] text-xs font-bold transition-all"
           data-tab="login"
         >
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
@@ -143,7 +155,7 @@
 
         <!-- Botão Criar Conta / Começar Agora -->
         <button 
-          class="btn-open-auth btn-primary px-5 py-2 text-xs font-bold shadow-[0_0_15px_rgba(57,189,245,0.3)]"
+          class="btn-open-auth btn-primary hidden sm:inline-flex px-5 py-2 text-xs font-bold shadow-[0_0_15px_rgba(57,189,245,0.3)]"
           data-tab="register-client"
         >
           <span>Criar Conta</span>
@@ -162,7 +174,7 @@
   </header>
 
   <!-- Menu Mobile Drawer -->
-  <div id="mobile-menu-drawer" class="fixed inset-0 z-50 bg-[#030A12]/95 backdrop-blur-xl hidden flex-col p-6">
+  <div id="mobile-menu-drawer" class="fixed inset-0 z-50 bg-[#030A12]/95 backdrop-blur-xl hidden flex flex-col p-6">
     <div class="flex items-center justify-between pb-6 border-b border-[#162C46]">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-lg bg-[#39BDF5] text-[#030A12] font-black flex items-center justify-center text-sm">
@@ -181,6 +193,7 @@
       <a href="#categorias" class="mobile-nav-link hover:text-[#39BDF5]">Categorias</a>
       <a href="#empresas" class="mobile-nav-link hover:text-[#39BDF5]">Para Empresas</a>
       <a href="#entregadores" class="mobile-nav-link hover:text-[#39BDF5]">Entregadores</a>
+      <a href="#meus-agendamentos" class="mobile-nav-link hover:text-[#39BDF5]">Meus Agendamentos</a>
       <a href="#suporte" class="mobile-nav-link hover:text-[#39BDF5]">Contato</a>
     </nav>
 
@@ -285,11 +298,6 @@
         <!-- Coluna Direita: Imagem Tecnológica + Cards Flutuantes (Inspirada no TechPro) -->
         <div class="lg:col-span-5 relative">
           
-          <!-- Elemento Manuscrito Flutuante (Estilo Imagem 2: "Conectando pessoas e tecnologia") -->
-          <div class="absolute -top-10 -right-2 md:right-4 z-20 font-handwriting text-2xl sm:text-3xl text-[#39BDF5] transform -rotate-6 pointer-events-none glow-cyan">
-            Conectando pessoas, empresas e entregadores ✨
-          </div>
-
           <!-- Container do Mockup Visual com Borda Luminous -->
           <div class="relative rounded-3xl overflow-hidden border border-[#39BDF5]/40 shadow-[0_0_50px_rgba(57,189,245,0.25)] bg-[#071522] group">
             
@@ -422,7 +430,7 @@
             Encontre tudo o que você precisa
           </h2>
           <p class="text-sm text-[#B8C7D8] mt-2 max-w-xl">
-            Explore diferentes categorias e descubra novas possibilidades de compra perto de você!
+            Explore diferentes categorias e descubra novas possibilidades de compra perto de você.
           </p>
         </div>
 
@@ -821,6 +829,21 @@
     </div>
   </section>
 
+  <section id="meus-agendamentos" class="py-16 bg-[#071522]/50 relative border-y border-[#162C46]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mb-8">
+        <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">Sua agenda</span>
+        <h2 class="text-3xl font-extrabold text-white font-['Outfit']">Meus Agendamentos</h2>
+        <p class="text-sm text-[#B8C7D8] mt-2">Confira os serviços selecionados, suas datas e horários. Agendamentos no carrinho aguardam a confirmação do pedido.</p>
+      </div>
+      <div id="appointments-page-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="col-span-full rounded-2xl border border-[#162C46] bg-[#0B1B2A] p-8 text-center text-sm text-[#B8C7D8]">
+          Você ainda não tem serviços agendados.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ====================================================================
        11. SUPORTE AO CLIENTE, FAQ E CONTATO
        ==================================================================== -->
@@ -1128,6 +1151,33 @@
     </div>
   </div>
 
+  <div id="appointments-overlay" class="fixed inset-0 z-50 modal-overlay hidden transition-opacity duration-300"></div>
+  <aside
+    id="appointments-drawer"
+    class="fixed top-0 right-0 z-50 w-full sm:w-[420px] h-full bg-[#0B1B2A] border-l border-[#162C46] shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out"
+    aria-label="Meus agendamentos"
+  >
+    <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="calendar-check" class="w-5 h-5 text-[#39BDF5]"></i>
+        <h3 class="text-base font-bold text-white">Meus Agendamentos</h3>
+      </div>
+      <button id="btn-close-appointments" class="p-1.5 rounded-lg text-[#B8C7D8] hover:text-white hover:bg-[#162C46]/50" aria-label="Fechar agendamentos">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="flex-grow overflow-y-auto p-5 space-y-3">
+      <div id="appointments-empty-state" class="text-center py-16 text-[#B8C7D8]">
+        <div class="w-16 h-16 rounded-full bg-[#071522] border border-[#162C46] flex items-center justify-center mx-auto mb-4 text-[#6C829D]">
+          <i data-lucide="calendar-days" class="w-8 h-8"></i>
+        </div>
+        <p class="text-base font-bold text-white mb-1">Nenhum agendamento</p>
+        <p class="text-xs text-[#B8C7D8] max-w-xs mx-auto">Seus serviços e horários marcados aparecerão aqui.</p>
+      </div>
+      <div id="appointments-list" class="space-y-3"></div>
+    </div>
+  </aside>
+
   <!-- ====================================================================
        15. MODAL DE CHECKOUT MULTI-ETAPAS (DADOS, PAGAMENTO PIX/CARTÃO)
        ==================================================================== -->
@@ -1164,7 +1214,7 @@
         <div id="checkout-step-1" class="space-y-4">
           <h4 class="text-sm font-bold text-white flex items-center gap-2">
             <i data-lucide="map-pin" class="w-4 h-4 text-[#39BDF5]"></i>
-            Onde devemos entregar seu pedido?
+            <span id="checkout-step1-heading">Onde devemos entregar seu pedido?</span>
           </h4>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1178,6 +1228,7 @@
             </div>
           </div>
 
+          <div id="checkout-address-fields" class="space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">CEP (Brasil) *</label>
@@ -1210,6 +1261,7 @@
               <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Estado (UF) *</label>
               <input type="text" id="checkout-state" value="SP" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none font-mono uppercase" />
             </div>
+          </div>
           </div>
 
           <div class="pt-4 flex justify-end">
@@ -1320,6 +1372,11 @@
               <span>Total a Pagar:</span>
               <span id="checkout-total" class="text-[#39BDF5] font-['Outfit']">R$ 0,00</span>
             </div>
+          </div>
+
+          <div id="checkout-appointments" class="hidden p-4 rounded-xl bg-[#39BDF5]/10 border border-[#39BDF5]/30">
+            <h5 class="text-xs font-bold text-[#39BDF5] mb-2">Horários agendados</h5>
+            <ul id="checkout-appointment-list" class="space-y-1.5 text-xs text-[#F5F9FF]"></ul>
           </div>
 
           <div class="p-3 rounded-xl bg-[#39BDF5]/10 border border-[#39BDF5]/30 flex items-center gap-2.5 text-xs text-[#39BDF5]">
@@ -1722,7 +1779,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-              <div class="flex items-center bg-[#071522] border border-[#162C46] rounded-xl px-2 py-1.5">
+              <div id="qv-qty-control" class="flex items-center bg-[#071522] border border-[#162C46] rounded-xl px-2 py-1.5">
                 <button onclick="let inp = document.getElementById('qv-qty-input'); inp.value = Math.max(1, parseInt(inp.value,10)-1)" class="px-2 text-sm text-[#B8C7D8] hover:text-white">-</button>
                 <input id="qv-qty-input" type="number" value="1" min="1" class="w-10 bg-transparent text-center text-xs font-bold text-white focus:outline-none" />
                 <button onclick="let inp = document.getElementById('qv-qty-input'); inp.value = parseInt(inp.value,10)+1" class="px-2 text-sm text-[#B8C7D8] hover:text-white">+</button>
@@ -1730,12 +1787,48 @@
 
               <button id="qv-add-btn" class="btn-primary flex-grow py-3 text-xs font-bold">
                 <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-                Adicionar ao Carrinho
+                <span id="qv-add-label">Adicionar ao Carrinho</span>
               </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="appointment-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/40 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-[#39BDF5] font-bold">Agendamento de serviço</span>
+          <h3 class="text-base font-bold text-white">Escolha data e horário</h3>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="appointment-modal" aria-label="Fechar agendamento">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form id="appointment-form" class="p-5 space-y-4">
+        <div class="rounded-xl bg-[#071522] border border-[#162C46] p-3">
+          <p id="appointment-business" class="text-xs text-[#39BDF5] font-semibold"></p>
+          <p id="appointment-service" class="text-sm font-bold text-white mt-1"></p>
+          <p id="appointment-price" class="text-xs text-[#B8C7D8] mt-1"></p>
+        </div>
+        <div>
+          <label for="appointment-date" class="block text-xs font-semibold text-[#B8C7D8] mb-1">Data do atendimento</label>
+          <input id="appointment-date" name="date" type="date" required class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none" />
+        </div>
+        <div>
+          <label for="appointment-time" class="block text-xs font-semibold text-[#B8C7D8] mb-1">Horário disponível</label>
+          <select id="appointment-time" name="time" required class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none">
+            <option value="">Escolha uma data</option>
+          </select>
+        </div>
+        <p class="text-[11px] leading-relaxed text-[#6C829D]">O horário escolhido ficará vinculado ao serviço no carrinho e na confirmação do pedido.</p>
+        <div class="flex gap-3 pt-1">
+          <button type="button" class="btn-close-modal btn-outline flex-1 py-2.5 text-xs font-semibold" data-modal-id="appointment-modal">Cancelar</button>
+          <button type="submit" class="btn-primary flex-1 py-2.5 text-xs font-bold">Confirmar horário</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1750,8 +1843,8 @@
             <i data-lucide="store" class="w-5 h-5"></i>
           </div>
           <div>
-            <span class="text-[10px] text-[#39BDF5] uppercase font-bold tracking-wider">Demonstração do Canvas de Negócios</span>
-            <h3 class="text-base font-bold text-white">Painel da Empresa Parceira (Bistrô & Burger)</h3>
+            <span class="text-[10px] text-[#39BDF5] uppercase font-bold tracking-wider">Gestão do catálogo</span>
+            <h3 class="text-base font-bold text-white">Painel de Lojas e Produtos</h3>
           </div>
         </div>
         <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="role-partner-preview-modal">
@@ -1760,6 +1853,67 @@
       </div>
 
       <div class="p-6 space-y-6">
+        <section class="space-y-4 rounded-2xl border border-[#39BDF5]/30 bg-[#071522]/70 p-4 sm:p-5">
+          <div>
+            <h4 class="text-sm font-bold text-white">Gerenciar lojas e produtos</h4>
+            <p class="mt-1 text-xs text-[#B8C7D8]">Cadastre lojas, adicione produtos e remova itens do catálogo. As alterações ficam salvas neste navegador.</p>
+          </div>
+
+          <form id="manager-business-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="text-xs font-semibold text-[#B8C7D8]">
+              Nome da loja
+              <input name="name" required maxlength="80" placeholder="Ex.: Minha loja de açaí" class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8]">
+              Categoria
+              <select name="categoryId" required class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none">
+                <option value="alimentacao">Alimentação</option>
+                <option value="supermercados">Supermercados</option>
+                <option value="farmacias">Farmácias</option>
+                <option value="roupas">Moda</option>
+                <option value="eletronicos">Eletrônicos</option>
+                <option value="beleza">Beleza e serviços</option>
+                <option value="casa">Casa</option>
+                <option value="outros">Outros</option>
+              </select>
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8] sm:col-span-2">
+              Bairro e cidade
+              <input name="neighborhood" maxlength="80" placeholder="Ex.: Centro, São Paulo" class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <button type="submit" class="btn-primary sm:col-span-2 py-2.5 text-xs font-bold">Cadastrar loja</button>
+          </form>
+
+          <form id="manager-product-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-[#162C46] pt-4">
+            <label class="text-xs font-semibold text-[#B8C7D8] sm:col-span-2">
+              Loja do produto
+              <select name="businessId" required class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none"></select>
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8]">
+              Nome do produto
+              <input name="name" required maxlength="100" placeholder="Ex.: Açaí 500 ml" class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8]">
+              Preço (R$)
+              <input name="price" type="number" min="0.01" step="0.01" required placeholder="25,00" class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8] sm:col-span-2">
+              Descrição
+              <input name="description" maxlength="240" placeholder="Detalhes do produto ou serviço" class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <label class="text-xs font-semibold text-[#B8C7D8] sm:col-span-2">
+              URL da imagem (opcional)
+              <input name="image" type="url" placeholder="https://..." class="mt-1 w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+            </label>
+            <button type="submit" class="btn-primary sm:col-span-2 py-2.5 text-xs font-bold">Adicionar produto</button>
+          </form>
+
+          <div>
+            <h5 class="mb-2 text-xs font-bold text-white">Catálogo cadastrado</h5>
+            <div id="manager-catalog-list" class="space-y-2"></div>
+          </div>
+        </section>
+
         <!-- 3 Métricas do Dia (Canvas: Vendas & Comissão) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46]">

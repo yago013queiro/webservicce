@@ -30,7 +30,7 @@ O projeto foi rigorosamente construído com base nas duas referências solicitad
      - Tipografia Clara: `#F5F9FF` e `#B8C7D8`
    - **Elementos de Design Replicados**:
      - Cabeçalho fixo com logotipo `</> WebService - Marketplace & Delivery`, atalhos de navegação com traço azul luminoso interativo (`nav-item-link`) ativo no item atual e em hover, barra de pesquisa rápida e botões arredondados em ciano elétrico.
-     - Seção Hero impactante com tag *"COMODIDADE NA PALMA DA SUA MÃO"*, manchete com destaque luminoso *"em um só lugar"*, botões pill e ilustração tecnológica com o elemento manuscrito estilizado: *"Conectando pessoas, empresas e entregadores ✨"*.
+     - Seção Hero impactante com tag *"COMODIDADE NA PALMA DA SUA MÃO"*, manchete com destaque luminoso *"em um só lugar"*, botões pill e ilustração tecnológica.
      - **Faixa de Benefícios Horizontal (Tech Strip)** diretamente inspirada na barra contrastante da Imagem 2 (fundo ciano-claro com ícones e textos escuros de altíssimo contraste para: *Praticidade*, *Segurança*, *Agilidade* e *Variedade*).
      - Cards arredondados com efeito hover luminoso (`glow-card`), sombras neon suaves e transições elegantes.
 
@@ -69,7 +69,13 @@ O projeto foi rigorosamente construído com base nas duas referências solicitad
   - Formulário de Contato Direto e Inscrição na Newsletter.
 - **Assistente Virtual de Suporte (Chat Widget)**:
   - Botão flutuante no canto inferior direito com pulso de status online.
-  - Janela de atendimento com respostas automáticas inteligentes sobre rastreamento, cadastro de lojas, entregadores e formas de pagamento.
+  - Janela de atendimento com respostas sobre rastreamento, cadastro de lojas, entregadores e formas de pagamento, sem repetir a resposta padrão.
+- **Painel de Lojas e Produtos**:
+  - Acesse em **Painel Loja** para cadastrar/remover lojas, adicionar produtos com preço, descrição e imagem, e remover itens.
+  - O catálogo de demonstração apresenta produtos e serviços com imagens próprias, sem gerar itens de preenchimento que repitam a foto de outro produto. Inclui iFood, Mercado Livre, açaí, padaria, pizzaria, hortifruti, farmácia, livraria, floricultura, pet shop, moda esportiva, doceria, salão, barbearia e assistência técnica de computadores.
+  - Serviços de barbearia, salão e assistência técnica permitem selecionar data e horário; os agendamentos aparecem em **Meus Agendamentos** e são mantidos após a confirmação do pedido.
+  - As alterações são salvas no armazenamento local do navegador; lojas e produtos de demonstração novos são incluídos também em catálogos já salvos.
+- **Meus Agendamentos**: Consulte serviços no carrinho e agendamentos confirmados, com estabelecimento, data, horário e número do pedido. Os agendamentos confirmados ficam salvos neste navegador.
 
 ---
 
@@ -98,18 +104,6 @@ Como o projeto foi projetado com arquitetura web moderna e independente de servi
 
 3. **Opção com Servidor Local (se desejar)**:
    Caso possua alguma extensão como Live Server no VS Code ou equivalente, basta iniciar sobre a pasta do projeto.
-
-### Publicar no Vercel
-
-O projeto da interface pode ser publicado como site estático no Vercel. Ao importar o repositório no Vercel:
-
-1. Selecione esta pasta (`Meuprojeto`) como **Root Directory**.
-2. Deixe **Framework Preset** como `Other`.
-3. Deixe **Build Command** vazio.
-4. Deixe **Output Directory** vazio.
-5. Faça o deploy.
-
-O diretório `backend/` não será enviado pela configuração atual do projeto. Ele usa PHP e não é compatível com o deploy estático do Vercel. Para habilitar os cadastros e a API, o backend PHP deve ser publicado separadamente em um servidor com PHP/PDO e o frontend deve apontar para a URL dessa API.
 
 ---
 

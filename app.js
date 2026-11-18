@@ -7,15 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicialização de Estado da Aplicação
   const state = {
     cart: [],
+    appointments: [],
     wishlist: new Set(),
     activeCategory: 'all',
     searchQuery: '',
     priceFilter: 'all',
+    visibleProductCount: 16,
     appliedCoupon: null,
     currentUser: null,
     activeOrder: null,
+    pendingAppointment: null,
     orderStepInterval: null
   };
+  const MARKETPLACE_STORAGE_KEY = 'webservice-marketplace-catalog';
+  const APPOINTMENTS_STORAGE_KEY = 'webservice-marketplace-appointments';
+  const MARKETPLACE_CATALOG_VERSION = 3;
+  const PRODUCT_PAGE_SIZE = 16;
 
   // Cupons válidos de demonstração
   const AVAILABLE_COUPONS = {
@@ -25,12 +32,88 @@ document.addEventListener('DOMContentLoaded', () => {
     'PRIMEIRA15': { type: 'percent', value: 0.15, minTotal: 50.0, label: '15% de desconto' }
   };
 
-  // Helper para formatar moeda brasileira (R$)
+  // Função auxiliar para formatar valores em reais.
   function formatMoney(amount) {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     }).format(amount);
+  }
+
+  function getLocalDateValue(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function isAppointmentService(product) {
+    return product.appointmentBased === true ||
+      MARKETPLACE_DATA.businesses.some(business => business.id === product.businessId && business.appointmentBased === true);
+  }
+
+  function getAvailableAppointmentTimes(dateValue, businessId) {
+    if (!dateValue) return [];
+    const now = new Date();
+    const isToday = dateValue === getLocalDateValue(now);
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const times = [];
+
+    for (let minutes = 9 * 60; minutes <= 17 * 60; minutes += 30) {
+      if (isToday && minutes <= currentMinutes) continue;
+      const time = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+      const alreadySelected = state.cart.some(item =>
+        item.appointment &&
+        item.product.businessId === businessId &&
+        item.appointment.date === dateValue &&
+        item.appointment.time === time
+      );
+      if (!alreadySelected) times.push(time);
+    }
+
+    return times;
+  }
+
+  function formatAppointmentDate(dateValue) {
+    const [year, month, day] = dateValue.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('pt-BR');
+  }
+
+  function loadSavedAppointments() {
+    try {
+      const saved = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
+      if (!saved) return;
+      const appointments = JSON.parse(saved);
+      const validAppointments = Array.isArray(appointments) && appointments.every(appointment =>
+        appointment &&
+        typeof appointment.id === 'string' &&
+        appointment.product &&
+        typeof appointment.product.name === 'string' &&
+        typeof appointment.product.businessName === 'string' &&
+        Number.isFinite(appointment.product.price) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(appointment.date) &&
+        /^\d{2}:\d{2}$/.test(appointment.time) &&
+        typeof appointment.orderId === 'string'
+      );
+      if (!validAppointments) {
+        throw new Error('Formato de agendamentos salvo é inválido.');
+      }
+      state.appointments = appointments;
+    } catch (error) {
+      console.error('Não foi possível carregar os agendamentos salvos.', error);
+      showToast('Não foi possível carregar os agendamentos salvos neste navegador.', 'error');
+    }
+  }
+
+  function saveAppointments() {
+    try {
+      localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(state.appointments));
+      return true;
+    } catch (error) {
+      console.error('Não foi possível salvar os agendamentos.', error);
+      showToast('Não foi possível salvar os agendamentos neste navegador.', 'error');
+      return false;
+    }
   }
 
   // Notificações Toast
@@ -55,10 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
       iconColor = '#3B82F6';
     }
 
-    toast.innerHTML = `
-      <i data-lucide="${iconName}" style="color: ${iconColor}; width: 20px; height: 20px; flex-shrink: 0;"></i>
-      <span style="flex-grow: 1;">${message}</span>
-    `;
+    const icon = document.createElement('i');
+    icon.setAttribute('data-lucide', iconName);
+    icon.style.color = iconColor;
+    icon.style.width = '20px';
+    icon.style.height = '20px';
+    icon.style.flexShrink = '0';
+    const text = document.createElement('span');
+    text.style.flexGrow = '1';
+    text.textContent = message;
+    toast.append(icon, text);
 
     container.appendChild(toast);
     if (window.lucide) {
@@ -71,6 +160,312 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.style.transition = 'all 0.3s ease';
       setTimeout(() => toast.remove(), 300);
     }, 3500);
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[character]);
+  }
+
+  const PRODUCT_IMAGE_FALLBACKS = {
+    alimentacao: [
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd',
+      'https://images.unsplash.com/photo-1513104890138-7c749659a591',
+      'https://images.unsplash.com/photo-1550547660-d9450f859349',
+      'https://images.unsplash.com/photo-1578985545062-69928b1d9587'
+    ],
+    supermercados: [
+      'https://images.unsplash.com/photo-1542838132-92c53300491e',
+      'https://images.unsplash.com/photo-1610832958506-aa56368176cf',
+      'https://images.unsplash.com/photo-1540420773420-3366772f4999',
+      'https://images.unsplash.com/photo-1509440159596-0249088772ff'
+    ],
+    farmacias: [
+      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae',
+      'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b',
+      'https://images.unsplash.com/photo-1556228720-195a672e8a03',
+      'https://images.unsplash.com/photo-1584017911766-d451b3d0e843'
+    ],
+    eletronicos: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3',
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853',
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944'
+    ],
+    roupas: [
+      'https://images.unsplash.com/photo-1544441893-675973e31985',
+      'https://images.unsplash.com/photo-1538805060514-97d9cc17730c',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
+      'https://images.unsplash.com/photo-1445205170230-053b83016050'
+    ],
+    beleza: [
+      'https://images.unsplash.com/photo-1560066984-138dadb4c035',
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9',
+      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be',
+      'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388'
+    ],
+    casa: [
+      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c',
+      'https://images.unsplash.com/photo-1490750967868-88aa4486c946',
+      'https://images.unsplash.com/photo-1484101403633-562f891dc89a',
+      'https://images.unsplash.com/photo-1485955900006-10f4d324d411'
+    ],
+    outros: [
+      'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd',
+      'https://images.unsplash.com/photo-1544947950-fa07a98d237f',
+      'https://images.unsplash.com/photo-1573865526739-10659fec78a5',
+      'https://images.unsplash.com/photo-1589924691995-400dc9ecc119'
+    ]
+  };
+
+  function getProductImage(product) {
+    if (product && String(product.image || '').trim()) return product.image;
+    const pool = PRODUCT_IMAGE_FALLBACKS[product && product.categoryId] || [
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format&fit=crop&q=80'
+    ];
+    const seed = String(product && (product.id || product.name) || '');
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) hash = ((hash * 31) + seed.charCodeAt(i)) >>> 0;
+    const url = pool[hash % pool.length];
+    return url.includes('?') ? url : `${url}?w=600&auto=format&fit=crop&q=80`;
+  }
+
+  // Imagens extras para produtos cadastrados, sempre escolhidas sem repetir arquivos.
+  const UNIQUE_PRODUCT_IMAGES = [
+    'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&auto=format&fit=crop&q=80',
+    'acai-bowl.svg',
+    'https://images.unsplash.com/photo-1621607512214-68297480165e?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1579751626657-72bc17010498?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1558788353-f76d92427f16?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1528712306091-ed0763094c98?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1547592180-85f173990554?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1579113800032-c38bd7635818?w=600&auto=format&fit=crop&q=80'
+  ];
+
+  const PRODUCT_IMAGE_BY_ID = {
+    'prod-1': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80',
+    'prod-2': 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600&auto=format&fit=crop&q=80',
+    'prod-3': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=80',
+    'prod-4': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80',
+    'prod-5': 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+    'prod-6': 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&auto=format&fit=crop&q=80',
+    'prod-7': 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80',
+    'prod-8': 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=600&auto=format&fit=crop&q=80',
+    'prod-9': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80',
+    'prod-10': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80',
+    'prod-11': 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=600&auto=format&fit=crop&q=80',
+    'prod-12': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80',
+    'prod-ifood-1': 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
+    'prod-mercado-livre-1': 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&auto=format&fit=crop&q=80',
+    'prod-acai-1': 'acai-bowl.svg',
+    'prod-barbearia-1': 'https://images.unsplash.com/photo-1621607512214-68297480165e?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-padaria-1': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-padaria-2': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-pizzaria-1': 'https://images.unsplash.com/photo-1579751626657-72bc17010498?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-pizzaria-2': 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-hortifruti-1': 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-hortifruti-2': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-farmacia-1': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-farmacia-2': 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-livraria-1': 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-livraria-2': 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-floricultura-1': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-floricultura-2': 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-pet-1': 'https://images.unsplash.com/photo-1558788353-f76d92427f16?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-pet-2': 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-esportes-1': 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-esportes-2': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-salao-1': 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-salao-2': 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-doceria-1': 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-doceria-2': 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80',
+    'prod-demo-bytecare-1': 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80'
+  };
+
+  function getProductImageKey(image) {
+    const value = String(image || '').trim();
+    if (!value) return '';
+    try {
+      const url = new URL(value, window.location.href);
+      return `${url.origin}${url.pathname}`.toLowerCase();
+    } catch (error) {
+      return value.split(/[?#]/, 1)[0].toLowerCase();
+    }
+  }
+
+  function ensureUniqueProductImages() {
+    if (!Array.isArray(MARKETPLACE_DATA.products)) return false;
+    const usedImages = new Set();
+    let changed = false;
+
+    MARKETPLACE_DATA.products.forEach(product => {
+      const mappedImage = PRODUCT_IMAGE_BY_ID[product.id];
+      if (!mappedImage) return;
+      if (product.image !== mappedImage) changed = true;
+      product.image = mappedImage;
+      const imageKey = getProductImageKey(mappedImage);
+      if (usedImages.has(imageKey)) {
+        throw new Error(`A imagem do produto "${product.name}" está repetida no catálogo.`);
+      }
+      usedImages.add(imageKey);
+    });
+
+    MARKETPLACE_DATA.products.forEach(product => {
+      if (PRODUCT_IMAGE_BY_ID[product.id]) return;
+
+      const currentImage = String(product.image || '').trim();
+      const currentKey = getProductImageKey(currentImage);
+      if (currentImage && !usedImages.has(currentKey)) {
+        usedImages.add(currentKey);
+        return;
+      }
+
+      const categoryImages = PRODUCT_IMAGE_FALLBACKS[product.categoryId] || [];
+      const availableImage = [...categoryImages, ...UNIQUE_PRODUCT_IMAGES].find(candidate => {
+        const url = candidate.includes('?')
+          ? candidate
+          : `${candidate}?w=600&auto=format&fit=crop&q=80`;
+        return !usedImages.has(getProductImageKey(url));
+      });
+
+      if (!availableImage) {
+        throw new Error(`Não há imagens exclusivas disponíveis para "${product.name}".`);
+      }
+
+      product.image = availableImage.includes('?')
+        ? availableImage
+        : `${availableImage}?w=600&auto=format&fit=crop&q=80`;
+      usedImages.add(getProductImageKey(product.image));
+      changed = true;
+    });
+
+    return changed;
+  }
+
+  function loadSavedCatalog() {
+    try {
+      const saved = localStorage.getItem(MARKETPLACE_STORAGE_KEY);
+      if (!saved) return;
+      const catalog = JSON.parse(saved);
+      if (!catalog || !Array.isArray(catalog.businesses) || !Array.isArray(catalog.products)) {
+        throw new Error('Formato de catálogo inválido.');
+      }
+      const needsCatalogMigration = catalog.version !== MARKETPLACE_CATALOG_VERSION;
+      const previousAcaiImage = 'https://images.unsplash.com/photo-1590301157890-4810ed352733';
+      const demoBusinesses = MARKETPLACE_DATA.businesses.filter(business => business.id.startsWith('business-demo-'));
+      const demoProducts = MARKETPLACE_DATA.products.filter(product => product.id.startsWith('prod-demo-') || product.id.startsWith('catalog-'));
+      const appointmentBusinessIds = new Set(
+        MARKETPLACE_DATA.businesses.filter(business => business.appointmentBased).map(business => business.id)
+      );
+      let migrated = false;
+      const savedBusinesses = catalog.businesses.map(business => {
+        const updatedBusiness = { ...business };
+        if (updatedBusiness.id === 'acai-da-praca' &&
+            (String(updatedBusiness.image || '').startsWith(previousAcaiImage) || String(updatedBusiness.logo || '').startsWith(previousAcaiImage))) {
+          if (String(updatedBusiness.image || '').startsWith(previousAcaiImage)) updatedBusiness.image = 'acai-bowl.svg';
+          if (String(updatedBusiness.logo || '').startsWith(previousAcaiImage)) updatedBusiness.logo = 'acai-bowl.svg';
+          migrated = true;
+        }
+        if (appointmentBusinessIds.has(updatedBusiness.id) && updatedBusiness.appointmentBased !== true) {
+          updatedBusiness.appointmentBased = true;
+          migrated = true;
+        }
+        return updatedBusiness;
+      });
+      const savedProducts = catalog.products.filter(product => {
+        if (!product.id.startsWith('catalog-')) return true;
+        migrated = true;
+        return false;
+      }).map(product => {
+        const mappedImage = PRODUCT_IMAGE_BY_ID[product.id];
+        if (mappedImage) {
+          if (product.image !== mappedImage) migrated = true;
+          return { ...product, image: mappedImage };
+        }
+        if (product.id === 'prod-acai-1' && String(product.image || '').startsWith(previousAcaiImage)) {
+          migrated = true;
+          return { ...product, image: 'acai-bowl.svg' };
+        }
+        return product;
+      });
+      const savedBusinessIds = new Set(savedBusinesses.map(business => business.id));
+      const savedProductIds = new Set(savedProducts.map(product => product.id));
+      const missingDemoBusinesses = needsCatalogMigration ? demoBusinesses.filter(business => !savedBusinessIds.has(business.id)) : [];
+      const missingDemoProducts = needsCatalogMigration ? demoProducts.filter(product => !savedProductIds.has(product.id)) : [];
+      MARKETPLACE_DATA.businesses = [...savedBusinesses, ...missingDemoBusinesses];
+      MARKETPLACE_DATA.products = [...savedProducts, ...missingDemoProducts];
+      migrated = ensureUniqueProductImages() || migrated;
+      migrated = migrated || needsCatalogMigration || missingDemoBusinesses.length > 0 || missingDemoProducts.length > 0;
+      if (migrated) saveCatalog();
+    } catch (error) {
+      console.error('Não foi possível carregar o catálogo salvo.', error);
+      showToast('Não foi possível carregar o catálogo salvo. Os dados de demonstração serão exibidos.', 'error');
+    }
+  }
+
+  function saveCatalog() {
+    try {
+      ensureUniqueProductImages();
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify({
+        version: MARKETPLACE_CATALOG_VERSION,
+        businesses: MARKETPLACE_DATA.businesses,
+        products: MARKETPLACE_DATA.products
+      }));
+      return true;
+    } catch (error) {
+      console.error('Não foi possível salvar as alterações do catálogo.', error);
+      showToast('Não foi possível salvar no navegador. As alterações ficarão disponíveis somente nesta sessão.', 'error');
+      return false;
+    }
   }
 
   // ========================================================================
@@ -147,8 +542,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Imagem de Capa do Estabelecimento -->
           <div class="relative h-44 overflow-hidden">
             <img 
-              src="${b.image}" 
-              alt="${b.name}" 
+              src="${escapeHTML(b.image)}" 
+              alt="${escapeHTML(b.name)}" 
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
               loading="lazy"
             />
@@ -157,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Badge de Categoria e Avaliação -->
             <div class="absolute top-3 left-3">
               <span class="badge-tech bg-[#030A12]/90 backdrop-blur-md">
-                ${b.badge}
+                ${escapeHTML(b.badge)}
               </span>
             </div>
             <div class="absolute top-3 right-3 bg-[#030A12]/90 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-[#162C46]">
@@ -168,32 +563,32 @@ document.addEventListener('DOMContentLoaded', () => {
             
             <!-- Logo Flutuante da Empresa -->
             <div class="absolute -bottom-4 left-5 w-12 h-12 rounded-xl overflow-hidden border-2 border-[#39BDF5] shadow-lg bg-[#071522]">
-              <img src="${b.logo}" alt="Logo ${b.name}" class="w-full h-full object-cover" />
+              <img src="${escapeHTML(b.logo)}" alt="Logo ${escapeHTML(b.name)}" class="w-full h-full object-cover" />
             </div>
           </div>
 
           <!-- Informações da Empresa -->
           <div class="p-5 pt-7">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs font-semibold text-[#39BDF5] tracking-wide uppercase">${b.category}</span>
+              <span class="text-xs font-semibold text-[#39BDF5] tracking-wide uppercase">${escapeHTML(b.category)}</span>
               <span class="text-[#6C829D] text-xs">•</span>
               <span class="text-xs text-[#B8C7D8] flex items-center gap-1">
-                <i data-lucide="map-pin" class="w-3 h-3 text-[#39BDF5]"></i> ${b.neighborhood}
+                <i data-lucide="map-pin" class="w-3 h-3 text-[#39BDF5]"></i> ${escapeHTML(b.neighborhood)}
               </span>
             </div>
 
             <h3 class="text-lg font-bold text-white group-hover:text-[#39BDF5] transition-colors mb-2">
-              ${b.name}
+              ${escapeHTML(b.name)}
             </h3>
 
             <p class="text-xs text-[#B8C7D8] line-clamp-2 leading-relaxed mb-4">
-              ${b.description}
+              ${escapeHTML(b.description)}
             </p>
 
             <div class="flex items-center justify-between pt-3 border-t border-[#162C46] text-xs text-[#B8C7D8]">
               <div class="flex items-center gap-1.5">
                 <i data-lucide="clock" class="w-3.5 h-3.5 text-[#39BDF5]"></i>
-                <span>${b.deliveryTime}</span>
+                <span>${escapeHTML(b.deliveryTime)}</span>
               </div>
               <div class="flex items-center gap-1.5 font-medium ${b.deliveryFee === 0 ? 'text-emerald-400 font-semibold' : 'text-[#F5F9FF]'}">
                 <i data-lucide="bike" class="w-3.5 h-3.5 text-[#39BDF5]"></i>
@@ -206,8 +601,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="p-5 pt-0">
           <button 
             class="btn-view-business w-full py-2.5 rounded-xl border border-[#39BDF5]/40 hover:border-[#39BDF5] text-white hover:text-[#39BDF5] hover:bg-[#39BDF5]/10 font-semibold text-sm transition-all flex items-center justify-center gap-2"
-            data-business-name="${b.name}"
-            data-business-cat="${b.categoryId}"
+            data-business-name="${escapeHTML(b.name)}"
+            data-business-cat="${escapeHTML(b.categoryId)}"
           >
             <span>Ver Produtos da Loja</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -259,10 +654,14 @@ document.addEventListener('DOMContentLoaded', () => {
       filtered = filtered.filter(p => p.price > 150);
     }
 
+    const visibleProducts = filtered.slice(0, state.visibleProductCount);
+
     // Contagem de resultados encontrados
     const counterEl = document.getElementById('products-count');
     if (counterEl) {
-      counterEl.textContent = `${filtered.length} produto${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
+      counterEl.textContent = filtered.length > visibleProducts.length
+        ? `Mostrando ${visibleProducts.length} de ${filtered.length} produtos`
+        : `${filtered.length} produto${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
     }
 
     if (filtered.length === 0) {
@@ -284,17 +683,22 @@ document.addEventListener('DOMContentLoaded', () => {
           state.activeCategory = 'all';
           state.searchQuery = '';
           state.priceFilter = 'all';
-          const searchInput = document.getElementById('search-input');
-          if (searchInput) searchInput.value = '';
+          state.visibleProductCount = PRODUCT_PAGE_SIZE;
+          document.querySelectorAll('#nav-search-input, #hero-search-input, #products-search-input').forEach(input => {
+            input.value = '';
+          });
+          const priceFilter = document.getElementById('price-filter-select');
+          if (priceFilter) priceFilter.value = 'all';
           updateCategoryFilterButtons();
           renderProducts();
+          scrollToProductsSection();
         });
       }
       if (window.lucide) lucide.createIcons({ root: grid });
       return;
     }
 
-    grid.innerHTML = filtered.map(p => {
+    grid.innerHTML = visibleProducts.map(p => {
       const isWishlisted = state.wishlist.has(p.id);
       const discountPercent = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
 
@@ -304,8 +708,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Imagem do Produto com Efeito Zoom -->
             <div class="relative h-52 overflow-hidden bg-[#071522] cursor-pointer btn-quick-view" data-product-id="${p.id}">
               <img 
-                src="${p.image}" 
-                alt="${p.name}" 
+                    src="${escapeHTML(getProductImage(p))}" 
+                    alt="${escapeHTML(p.name)}" 
                 class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" 
                 loading="lazy"
               />
@@ -314,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <!-- Badges de Promoção / Destaque -->
               <div class="absolute top-3 left-3 flex flex-col gap-1.5">
                 <span class="badge-tech bg-[#030A12]/90 backdrop-blur-md">
-                  ${p.badge}
+                  ${escapeHTML(p.badge)}
                 </span>
                 ${discountPercent > 0 ? `
                   <span class="bg-rose-500/90 text-white text-[11px] font-bold px-2 py-0.5 rounded-full w-max shadow-md">
@@ -326,7 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <!-- Botão de Favorito / Wishlist -->
               <button 
                 class="btn-wishlist absolute top-3 right-3 w-9 h-9 rounded-full bg-[#030A12]/80 backdrop-blur-md border border-[#162C46] flex items-center justify-center transition-colors hover:border-[#39BDF5] hover:text-[#39BDF5] ${isWishlisted ? 'text-rose-500 border-rose-500/50' : 'text-[#B8C7D8]'}"
-                data-product-id="${p.id}"
+                data-product-id="${escapeHTML(p.id)}"
                 title="Favoritar produto"
               >
                 <i data-lucide="heart" class="w-4 h-4 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}"></i>
@@ -343,15 +747,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="p-5">
               <div class="flex items-center gap-1.5 text-xs text-[#39BDF5] font-medium mb-1">
                 <i data-lucide="store" class="w-3.5 h-3.5"></i>
-                <span class="truncate">${p.businessName}</span>
+                <span class="truncate">${escapeHTML(p.businessName)}</span>
               </div>
 
-              <h4 class="text-base font-bold text-white group-hover:text-[#39BDF5] transition-colors line-clamp-1 mb-1.5 cursor-pointer btn-quick-view" data-product-id="${p.id}">
-                ${p.name}
+              <h4 class="text-base font-bold text-white group-hover:text-[#39BDF5] transition-colors line-clamp-1 mb-1.5 cursor-pointer btn-quick-view" data-product-id="${escapeHTML(p.id)}">
+                ${escapeHTML(p.name)}
               </h4>
 
               <p class="text-xs text-[#B8C7D8] line-clamp-2 leading-relaxed mb-4">
-                ${p.description}
+                ${escapeHTML(p.description)}
               </p>
 
               <!-- Preço em Reais Brasileiros (R$) -->
@@ -372,15 +776,27 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="p-5 pt-0">
             <button 
               class="btn-add-cart w-full py-2.5 rounded-xl bg-gradient-to-r from-[#087BD4] to-[#39BDF5] text-[#030A12] font-bold text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(57,189,245,0.45)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-              data-product-id="${p.id}"
+              data-product-id="${escapeHTML(p.id)}"
             >
               <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-              <span>Adicionar ao Carrinho</span>
+              <span>${isAppointmentService(p) ? 'Agendar Horário' : 'Adicionar ao Carrinho'}</span>
             </button>
           </div>
         </div>
       `;
     }).join('');
+
+    if (visibleProducts.length < filtered.length) {
+      const loadMoreButton = document.createElement('button');
+      loadMoreButton.type = 'button';
+      loadMoreButton.className = 'btn-outline col-span-full justify-self-center px-6 py-3 text-sm font-semibold';
+      loadMoreButton.textContent = `Carregar mais produtos (${filtered.length - visibleProducts.length} restantes)`;
+      loadMoreButton.addEventListener('click', () => {
+        state.visibleProductCount += PRODUCT_PAGE_SIZE;
+        renderProducts();
+      });
+      grid.appendChild(loadMoreButton);
+    }
 
     // Listeners de Adicionar ao Carrinho
     grid.querySelectorAll('.btn-add-cart').forEach(btn => {
@@ -409,6 +825,183 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (window.lucide) lucide.createIcons({ root: grid });
+  }
+
+  function renderManagerCatalog() {
+    const businessSelect = document.querySelector('#manager-product-form [name="businessId"]');
+    const catalogList = document.getElementById('manager-catalog-list');
+    if (!businessSelect || !catalogList) return;
+
+    const selectedBusinessId = businessSelect.value;
+    businessSelect.innerHTML = MARKETPLACE_DATA.businesses.map(business => `
+      <option value="${escapeHTML(business.id)}">${escapeHTML(business.name)}</option>
+    `).join('');
+    if (MARKETPLACE_DATA.businesses.some(business => business.id === selectedBusinessId)) {
+      businessSelect.value = selectedBusinessId;
+    }
+
+    const productSubmit = document.querySelector('#manager-product-form button[type="submit"]');
+    if (productSubmit) productSubmit.disabled = MARKETPLACE_DATA.businesses.length === 0;
+
+    if (MARKETPLACE_DATA.businesses.length === 0) {
+      catalogList.innerHTML = '<p class="text-xs text-[#B8C7D8]">Cadastre uma loja para começar seu catálogo.</p>';
+      return;
+    }
+
+    catalogList.innerHTML = MARKETPLACE_DATA.businesses.map(business => {
+      const businessProducts = MARKETPLACE_DATA.products.filter(product => product.businessId === business.id);
+      return `
+        <div class="rounded-xl border border-[#162C46] bg-[#0B1B2A] p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-xs font-bold text-white">${escapeHTML(business.name)}</p>
+              <p class="text-[11px] text-[#B8C7D8]">${businessProducts.length} produto(s)</p>
+            </div>
+            <button type="button" class="manager-delete-business text-[11px] text-rose-300 hover:text-rose-200" data-business-id="${escapeHTML(business.id)}">Remover loja</button>
+          </div>
+          ${businessProducts.length ? `
+            <ul class="mt-2 space-y-1 border-t border-[#162C46] pt-2">
+              ${businessProducts.map(product => `
+                <li class="flex items-center justify-between gap-3 text-[11px]">
+                  <span class="min-w-0 truncate text-[#B8C7D8]">${escapeHTML(product.name)} · ${formatMoney(product.price)}</span>
+                  <button type="button" class="manager-delete-product shrink-0 text-rose-300 hover:text-rose-200" data-product-id="${escapeHTML(product.id)}">Remover</button>
+                </li>
+              `).join('')}
+            </ul>
+          ` : '<p class="mt-2 border-t border-[#162C46] pt-2 text-[11px] text-[#6C829D]">Nenhum produto cadastrado.</p>'}
+        </div>
+      `;
+    }).join('');
+
+    catalogList.querySelectorAll('.manager-delete-business').forEach(button => {
+      button.addEventListener('click', () => {
+        const businessId = button.getAttribute('data-business-id');
+        const business = MARKETPLACE_DATA.businesses.find(item => item.id === businessId);
+        if (!business) return;
+        MARKETPLACE_DATA.businesses = MARKETPLACE_DATA.businesses.filter(item => item.id !== businessId);
+        MARKETPLACE_DATA.products = MARKETPLACE_DATA.products.filter(item => item.businessId !== businessId);
+        state.cart = state.cart.filter(item => item.product.businessId !== businessId);
+        const saved = saveCatalog();
+        refreshCatalogViews();
+        renderManagerCatalog();
+        if (saved) showToast(`Loja "${business.name}" removida do catálogo.`, 'info');
+      });
+    });
+
+    catalogList.querySelectorAll('.manager-delete-product').forEach(button => {
+      button.addEventListener('click', () => {
+        const productId = button.getAttribute('data-product-id');
+        const product = MARKETPLACE_DATA.products.find(item => item.id === productId);
+        if (!product) return;
+        MARKETPLACE_DATA.products = MARKETPLACE_DATA.products.filter(item => item.id !== productId);
+        state.cart = state.cart.filter(item => item.product.id !== productId);
+        const saved = saveCatalog();
+        refreshCatalogViews();
+        renderManagerCatalog();
+        if (saved) showToast(`"${product.name}" removido do catálogo.`, 'info');
+      });
+    });
+  }
+
+  function refreshCatalogViews() {
+    state.activeCategory = 'all';
+    state.searchQuery = '';
+    state.priceFilter = 'all';
+    state.visibleProductCount = PRODUCT_PAGE_SIZE;
+    document.querySelectorAll('#nav-search-input, #hero-search-input, #products-search-input').forEach(input => {
+      input.value = '';
+    });
+    const priceFilter = document.getElementById('price-filter-select');
+    if (priceFilter) priceFilter.value = 'all';
+    updateCategoryFilterButtons();
+    renderBusinesses();
+    renderProducts();
+    updateCartUI();
+  }
+
+  function createBusiness(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get('name') || '').trim();
+    const categoryId = String(formData.get('categoryId') || '');
+    const category = MARKETPLACE_DATA.categories.find(item => item.id === categoryId);
+    if (!name || !category) {
+      showToast('Informe um nome e uma categoria válida para a loja.', 'error');
+      return;
+    }
+
+    const categoryImage = MARKETPLACE_DATA.businesses.find(item => item.categoryId === categoryId);
+    MARKETPLACE_DATA.businesses.push({
+      id: `custom-business-${Date.now()}`,
+      name,
+      category: category.shortName,
+      categoryId,
+      rating: 5,
+      reviewsCount: 0,
+      deliveryTime: categoryId === 'beleza' ? 'Agendamento' : '30 - 45 min',
+      deliveryFee: 0,
+      image: categoryImage ? categoryImage.image : 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&auto=format&fit=crop&q=80',
+      logo: categoryImage ? categoryImage.logo : 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=150&auto=format&fit=crop&q=80',
+      badge: 'Novo parceiro',
+      neighborhood: String(formData.get('neighborhood') || '').trim() || 'São Paulo',
+      description: 'Estabelecimento parceiro cadastrado no painel da loja.'
+    });
+    const saved = saveCatalog();
+    form.reset();
+    refreshCatalogViews();
+    renderManagerCatalog();
+    if (saved) showToast(`Loja "${name}" cadastrada com sucesso!`);
+  }
+
+  function createProduct(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const businessId = String(formData.get('businessId') || '');
+    const business = MARKETPLACE_DATA.businesses.find(item => item.id === businessId);
+    const name = String(formData.get('name') || '').trim();
+    const description = String(formData.get('description') || '').trim();
+    const price = Number(formData.get('price'));
+    const imageInput = String(formData.get('image') || '').trim();
+    let image = '';
+
+    if (!business || !name || !Number.isFinite(price) || price <= 0) {
+      showToast('Selecione uma loja e informe o nome e um preço válido.', 'error');
+      return;
+    }
+    if (imageInput) {
+      try {
+        const imageUrl = new URL(imageInput);
+        if (imageUrl.protocol !== 'https:' && imageUrl.protocol !== 'http:') {
+          throw new Error('URL de imagem deve usar HTTP ou HTTPS.');
+        }
+        image = imageUrl.href;
+      } catch (error) {
+        showToast('Informe uma URL de imagem válida iniciada por http:// ou https://.', 'error');
+        return;
+      }
+    }
+
+    const product = {
+      id: `custom-product-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name,
+      businessName: business.name,
+      businessId: business.id,
+      categoryId: business.categoryId,
+      categoryName: business.category,
+      price,
+      rating: 5,
+      image: image || getProductImage({ id: name, categoryId: business.categoryId }),
+      badge: 'Novo item',
+      description: description || 'Produto cadastrado pela loja.'
+    };
+    MARKETPLACE_DATA.products.push(product);
+    const saved = saveCatalog();
+    form.reset();
+    refreshCatalogViews();
+    renderManagerCatalog();
+    if (saved) showToast(`"${name}" adicionado ao catálogo!`);
   }
 
   // 4. Renderizar Planos para Empresas Parceiras (Canvas: Fontes de Receita)
@@ -516,37 +1109,88 @@ document.addEventListener('DOMContentLoaded', () => {
   // GERENCIAMENTO DO CARRINHO DE COMPRAS
   // ========================================================================
 
-  function addToCart(productId, qty = 1) {
+  function addToCart(productId, qty = 1, appointment = null) {
     const product = MARKETPLACE_DATA.products.find(p => p.id === productId);
     if (!product) return;
 
-    const existingIndex = state.cart.findIndex(item => item.product.id === productId);
+    if (isAppointmentService(product) && !appointment) {
+      showAppointmentModal(product, qty);
+      return;
+    }
+
+    const bookingId = appointment ? `appointment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` : product.id;
+    const existingIndex = appointment ? -1 : state.cart.findIndex(item => item.product.id === productId && !item.appointment);
     if (existingIndex > -1) {
       state.cart[existingIndex].quantity += qty;
     } else {
-      state.cart.push({ product, quantity: qty });
+      state.cart.push({
+        id: bookingId,
+        product,
+        quantity: appointment ? 1 : qty,
+        appointment
+      });
     }
 
     updateCartUI();
-    showToast(`"${product.name}" adicionado ao carrinho!`);
+    showToast(appointment
+      ? `Horário de ${formatAppointmentDate(appointment.date)} às ${appointment.time} reservado no carrinho.`
+      : `"${product.name}" adicionado ao carrinho!`);
   }
 
-  function removeFromCart(productId) {
-    const item = state.cart.find(i => i.product.id === productId);
-    state.cart = state.cart.filter(i => i.product.id !== productId);
+  function populateAppointmentTimes() {
+    const timeSelect = document.getElementById('appointment-time');
+    const dateInput = document.getElementById('appointment-date');
+    const pending = state.pendingAppointment;
+    if (!timeSelect || !dateInput || !pending) return;
+
+    const times = getAvailableAppointmentTimes(dateInput.value, pending.businessId);
+    timeSelect.innerHTML = times.length
+      ? `<option value="">Selecione um horário</option>${times.map(time => `<option value="${time}">${time}</option>`).join('')}`
+      : '<option value="">Sem horários disponíveis nesta data</option>';
+  }
+
+  function showAppointmentModal(product, quantity = 1) {
+    const dateInput = document.getElementById('appointment-date');
+    const modal = document.getElementById('appointment-modal');
+    if (!dateInput || !modal) {
+      showToast('Não foi possível abrir o agendamento deste serviço.', 'error');
+      return;
+    }
+
+    const minimumDate = new Date();
+    const tomorrow = new Date(minimumDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    dateInput.min = getLocalDateValue(minimumDate);
+    dateInput.value = getLocalDateValue(tomorrow);
+    state.pendingAppointment = {
+      productId: product.id,
+      businessId: product.businessId,
+      quantity
+    };
+
+    document.getElementById('appointment-business').textContent = product.businessName;
+    document.getElementById('appointment-service').textContent = product.name;
+    document.getElementById('appointment-price').textContent = formatMoney(product.price);
+    populateAppointmentTimes();
+    openModal('appointment-modal');
+  }
+
+  function removeFromCart(cartItemId) {
+    const item = state.cart.find(i => (i.id || i.product.id) === cartItemId);
+    state.cart = state.cart.filter(i => (i.id || i.product.id) !== cartItemId);
     updateCartUI();
     if (item) {
       showToast(`Item removido do carrinho.`, 'info');
     }
   }
 
-  function updateQuantity(productId, delta) {
-    const item = state.cart.find(i => i.product.id === productId);
+  function updateQuantity(cartItemId, delta) {
+    const item = state.cart.find(i => (i.id || i.product.id) === cartItemId);
     if (!item) return;
 
     item.quantity += delta;
     if (item.quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
     } else {
       updateCartUI();
     }
@@ -565,9 +1209,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateCartTotals() {
     const subtotal = state.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const hasDeliveryItems = state.cart.some(item => !item.appointment);
     
     // Frete padrão R$ 7,90 ou Grátis acima de R$ 100
-    let deliveryFee = subtotal > 100 || subtotal === 0 ? 0.00 : 7.90;
+    let deliveryFee = !hasDeliveryItems || subtotal > 100 || subtotal === 0 ? 0.00 : 7.90;
     
     // Desconto por cupom
     let discount = 0.00;
@@ -601,6 +1246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         b.classList.remove('flex');
       }
     });
+    updateAppointmentsUI();
 
     // 2. Itens no Drawer do Carrinho
     const cartItemsContainer = document.getElementById('cart-items-list');
@@ -619,36 +1265,46 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emptyState) emptyState.classList.add('hidden');
     if (footerContainer) footerContainer.classList.remove('hidden');
 
-    cartItemsContainer.innerHTML = state.cart.map(item => `
-      <div class="cart-item-row flex items-center gap-3 p-3 rounded-xl bg-[#071522] border border-[#162C46]">
-        <img 
-          src="${item.product.image}" 
-          alt="${item.product.name}" 
-          class="w-16 h-16 rounded-lg object-cover shrink-0 border border-[#162C46]" 
-        />
-        <div class="flex-grow min-w-0">
-          <p class="text-xs text-[#39BDF5] truncate">${item.product.businessName}</p>
-          <h5 class="text-sm font-bold text-white truncate">${item.product.name}</h5>
-          <p class="text-xs text-[#B8C7D8] font-semibold mt-0.5">${formatMoney(item.product.price)} un.</p>
-        </div>
+    cartItemsContainer.innerHTML = state.cart.map(item => {
+      const cartItemId = item.id || item.product.id;
+      const appointmentDetails = item.appointment
+        ? `<p class="text-[11px] text-[#A8E1FF] mt-1">Agendado: ${formatAppointmentDate(item.appointment.date)} às ${escapeHTML(item.appointment.time)}</p>`
+        : '';
+      return `
+        <div class="cart-item-row flex items-center gap-3 p-3 rounded-xl bg-[#071522] border border-[#162C46]">
+          <img
+            src="${escapeHTML(getProductImage(item.product))}"
+            alt="${item.product.name}"
+            class="w-16 h-16 rounded-lg object-cover shrink-0 border border-[#162C46]"
+          />
+          <div class="flex-grow min-w-0">
+            <p class="text-xs text-[#39BDF5] truncate">${item.product.businessName}</p>
+            <h5 class="text-sm font-bold text-white truncate">${item.product.name}</h5>
+            <p class="text-xs text-[#B8C7D8] font-semibold mt-0.5">${formatMoney(item.product.price)} un.</p>
+            ${appointmentDetails}
+          </div>
 
-        <div class="flex flex-col items-end gap-1.5 shrink-0">
-          <button 
-            class="btn-remove-item text-xs text-[#6C829D] hover:text-rose-400 p-1"
-            data-product-id="${item.product.id}"
-            title="Remover produto"
-          >
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-          </button>
-          
-          <div class="flex items-center gap-2 bg-[#030A12] px-2 py-1 rounded-lg border border-[#162C46]">
-            <button class="btn-qty-minus text-xs text-[#B8C7D8] hover:text-[#39BDF5]" data-product-id="${item.product.id}">-</button>
-            <span class="text-xs font-bold text-white px-1">${item.quantity}</span>
-            <button class="btn-qty-plus text-xs text-[#B8C7D8] hover:text-[#39BDF5]" data-product-id="${item.product.id}">+</button>
+          <div class="flex flex-col items-end gap-1.5 shrink-0">
+            <button
+              class="btn-remove-item text-xs text-[#6C829D] hover:text-rose-400 p-1"
+              data-cart-item-id="${escapeHTML(cartItemId)}"
+              title="Remover item"
+            >
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+            ${item.appointment ? `
+              <span class="text-[11px] text-[#B8C7D8]">1 horário</span>
+            ` : `
+              <div class="flex items-center gap-2 bg-[#030A12] px-2 py-1 rounded-lg border border-[#162C46]">
+                <button class="btn-qty-minus text-xs text-[#B8C7D8] hover:text-[#39BDF5]" data-cart-item-id="${escapeHTML(cartItemId)}">-</button>
+                <span class="text-xs font-bold text-white px-1">${item.quantity}</span>
+                <button class="btn-qty-plus text-xs text-[#B8C7D8] hover:text-[#39BDF5]" data-cart-item-id="${escapeHTML(cartItemId)}">+</button>
+              </div>
+            `}
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     // Totais
     const { subtotal, deliveryFee, discount, total } = calculateCartTotals();
@@ -660,7 +1316,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalEl = document.getElementById('cart-total');
 
     if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal);
-    if (shippingEl) shippingEl.textContent = deliveryFee === 0 ? 'Grátis' : formatMoney(deliveryFee);
+    const hasDeliveryItems = state.cart.some(item => !item.appointment);
+    if (shippingEl) shippingEl.textContent = hasDeliveryItems ? (deliveryFee === 0 ? 'Grátis' : formatMoney(deliveryFee)) : 'Não se aplica';
     
     if (discountRow && discountEl) {
       if (discount > 0) {
@@ -675,16 +1332,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listeners do Carrinho
     cartItemsContainer.querySelectorAll('.btn-qty-plus').forEach(b => {
-      b.addEventListener('click', () => updateQuantity(b.getAttribute('data-product-id'), 1));
+      b.addEventListener('click', () => updateQuantity(b.getAttribute('data-cart-item-id'), 1));
     });
     cartItemsContainer.querySelectorAll('.btn-qty-minus').forEach(b => {
-      b.addEventListener('click', () => updateQuantity(b.getAttribute('data-product-id'), -1));
+      b.addEventListener('click', () => updateQuantity(b.getAttribute('data-cart-item-id'), -1));
     });
     cartItemsContainer.querySelectorAll('.btn-remove-item').forEach(b => {
-      b.addEventListener('click', () => removeFromCart(b.getAttribute('data-product-id')));
+      b.addEventListener('click', () => removeFromCart(b.getAttribute('data-cart-item-id')));
     });
 
     if (window.lucide) lucide.createIcons({ root: cartItemsContainer });
+  }
+
+  function updateAppointmentsUI() {
+    const pendingAppointments = state.cart
+      .filter(item => item.appointment)
+      .map(item => ({
+        id: item.id || item.product.id,
+        product: item.product,
+        date: item.appointment.date,
+        time: item.appointment.time,
+        status: 'No carrinho',
+        orderId: ''
+      }));
+    const confirmedAppointments = state.appointments.map(item => ({
+      ...item,
+      status: 'Confirmado'
+    }));
+    const appointments = [...confirmedAppointments, ...pendingAppointments]
+      .sort((first, second) => `${first.date} ${first.time}`.localeCompare(`${second.date} ${second.time}`));
+    const badges = document.querySelectorAll('.appointment-badge');
+    badges.forEach(badge => {
+      badge.textContent = appointments.length;
+      badge.classList.toggle('hidden', appointments.length === 0);
+      badge.classList.toggle('flex', appointments.length > 0);
+    });
+
+    const list = document.getElementById('appointments-list');
+    const pageList = document.getElementById('appointments-page-list');
+    const emptyState = document.getElementById('appointments-empty-state');
+    if (!list) return;
+
+    if (appointments.length === 0) {
+      list.innerHTML = '';
+      if (pageList) {
+        pageList.innerHTML = `
+          <div class="col-span-full rounded-2xl border border-[#162C46] bg-[#0B1B2A] p-8 text-center text-sm text-[#B8C7D8]">
+            Você ainda não tem serviços agendados.
+          </div>
+        `;
+      }
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    }
+
+    if (emptyState) emptyState.classList.add('hidden');
+    const appointmentCards = appointments.map(appointment => {
+      const confirmed = appointment.status === 'Confirmado';
+      return `
+        <article class="rounded-xl border border-[#162C46] bg-[#071522] p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-xs font-semibold text-[#39BDF5]">${escapeHTML(appointment.product.businessName)}</p>
+              <h4 class="mt-1 text-sm font-bold text-white">${escapeHTML(appointment.product.name)}</h4>
+            </div>
+            <span class="shrink-0 rounded-full ${confirmed ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'} px-2 py-1 text-[10px] font-bold">
+              ${appointment.status}
+            </span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#B8C7D8]">
+            <span class="inline-flex items-center gap-1.5">
+              <i data-lucide="calendar-days" class="h-3.5 w-3.5 text-[#39BDF5]"></i>
+              ${formatAppointmentDate(appointment.date)}
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <i data-lucide="clock-3" class="h-3.5 w-3.5 text-[#39BDF5]"></i>
+              ${escapeHTML(appointment.time)}
+            </span>
+          </div>
+          <div class="mt-3 flex items-center justify-between gap-3 border-t border-[#162C46] pt-3">
+            <span class="text-sm font-bold text-white">${formatMoney(appointment.product.price)}</span>
+            ${confirmed
+              ? `<span class="text-[11px] text-[#6C829D]">Pedido #${escapeHTML(appointment.orderId)}</span>`
+              : `<button type="button" class="btn-remove-pending-appointment text-xs font-semibold text-rose-300 hover:text-rose-200" data-cart-item-id="${escapeHTML(appointment.id)}">Remover</button>`
+            }
+          </div>
+        </article>
+      `;
+    }).join('');
+    list.innerHTML = appointmentCards;
+    if (pageList) pageList.innerHTML = appointmentCards;
+
+    document.querySelectorAll('.btn-remove-pending-appointment').forEach(button => {
+      button.addEventListener('click', () => removeFromCart(button.getAttribute('data-cart-item-id')));
+    });
+    if (window.lucide) lucide.createIcons({ root: list });
   }
 
   // ========================================================================
@@ -693,9 +1435,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function filterByCategory(catId) {
     state.activeCategory = catId;
+    state.visibleProductCount = PRODUCT_PAGE_SIZE;
     updateCategoryFilterButtons();
     renderProducts();
     renderBusinesses(catId);
+  }
+
+  function scrollToProductsSection() {
+    const productsSection = document.getElementById('produtos');
+    if (productsSection) productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function updateCategoryFilterButtons() {
@@ -724,7 +1472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('quick-view-modal');
     if (!modal) return;
 
-    document.getElementById('qv-image').src = product.image;
+    document.getElementById('qv-image').src = getProductImage(product);
     document.getElementById('qv-title').textContent = product.name;
     document.getElementById('qv-business').textContent = product.businessName;
     document.getElementById('qv-rating').textContent = product.rating.toFixed(1);
@@ -739,9 +1487,21 @@ document.addEventListener('DOMContentLoaded', () => {
       origPriceEl.classList.add('hidden');
     }
 
+    const appointmentService = isAppointmentService(product);
+    const quantityControl = document.getElementById('qv-qty-control');
+    const qtyInput = document.getElementById('qv-qty-input');
+    const addLabel = document.getElementById('qv-add-label');
+    if (quantityControl) quantityControl.classList.toggle('hidden', appointmentService);
+    if (qtyInput) qtyInput.value = '1';
+    if (addLabel) addLabel.textContent = appointmentService ? 'Escolher data e horário' : 'Adicionar ao Carrinho';
+
     const addBtn = document.getElementById('qv-add-btn');
     addBtn.onclick = () => {
-      const qtyInput = document.getElementById('qv-qty-input');
+      if (appointmentService) {
+        closeModal('quick-view-modal');
+        showAppointmentModal(product);
+        return;
+      }
       const qty = parseInt(qtyInput ? qtyInput.value : 1, 10) || 1;
       addToCart(product.id, qty);
       closeModal('quick-view-modal');
@@ -799,6 +1559,15 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Seu carrinho está vazio!', 'error');
       return;
     }
+    const hasDeliveryItems = state.cart.some(item => !item.appointment);
+    const addressFields = document.getElementById('checkout-address-fields');
+    const stepHeading = document.getElementById('checkout-step1-heading');
+    if (addressFields) addressFields.classList.toggle('hidden', !hasDeliveryItems);
+    if (stepHeading) {
+      stepHeading.lastChild.textContent = hasDeliveryItems
+        ? ' Onde devemos entregar seu pedido?'
+        : ' Seus dados para confirmar o atendimento';
+    }
     closeCartDrawer();
     switchCheckoutStep(1);
     updateCheckoutSummary();
@@ -814,10 +1583,24 @@ document.addEventListener('DOMContentLoaded', () => {
         else panel.classList.add('hidden');
       }
       if (stepIndicator) {
-        if (s <= stepNumber) {
+        stepIndicator.classList.remove(
+          'border-[#39BDF5]',
+          'text-[#39BDF5]',
+          'border-emerald-400',
+          'text-emerald-400',
+          'border-transparent',
+          'text-[#6C829D]'
+        );
+
+        if (s === stepNumber) {
           stepIndicator.classList.add('border-[#39BDF5]', 'text-[#39BDF5]');
+          stepIndicator.setAttribute('aria-current', 'step');
+        } else if (s < stepNumber) {
+          stepIndicator.classList.add('border-emerald-400', 'text-emerald-400');
+          stepIndicator.removeAttribute('aria-current');
         } else {
-          stepIndicator.classList.remove('border-[#39BDF5]', 'text-[#39BDF5]');
+          stepIndicator.classList.add('border-transparent', 'text-[#6C829D]');
+          stepIndicator.removeAttribute('aria-current');
         }
       }
     });
@@ -825,15 +1608,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCheckoutSummary() {
     const { subtotal, deliveryFee, discount, total } = calculateCartTotals();
+    const hasDeliveryItems = state.cart.some(item => !item.appointment);
     const subtotalEl = document.getElementById('checkout-subtotal');
     const shippingEl = document.getElementById('checkout-shipping');
     const discountEl = document.getElementById('checkout-discount');
     const totalEl = document.getElementById('checkout-total');
+    const appointmentSection = document.getElementById('checkout-appointments');
+    const appointmentList = document.getElementById('checkout-appointment-list');
 
     if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal);
-    if (shippingEl) shippingEl.textContent = deliveryFee === 0 ? 'Grátis' : formatMoney(deliveryFee);
+    if (shippingEl) shippingEl.textContent = hasDeliveryItems ? (deliveryFee === 0 ? 'Grátis' : formatMoney(deliveryFee)) : 'Não se aplica';
     if (discountEl) discountEl.textContent = `-${formatMoney(discount)}`;
     if (totalEl) totalEl.textContent = formatMoney(total);
+    if (appointmentSection && appointmentList) {
+      const appointments = state.cart.filter(item => item.appointment);
+      appointmentSection.classList.toggle('hidden', appointments.length === 0);
+      appointmentList.innerHTML = appointments.map(item => `
+        <li>${escapeHTML(item.product.businessName)} — ${escapeHTML(item.product.name)}: ${formatAppointmentDate(item.appointment.date)} às ${escapeHTML(item.appointment.time)}</li>
+      `).join('');
+    }
   }
 
   // Finalização do Pedido e Início da Simulação de Rastreamento
@@ -845,11 +1638,24 @@ document.addEventListener('DOMContentLoaded', () => {
       id: orderNumber,
       items: [...state.cart],
       total: total,
+      appointmentOnly: state.cart.every(item => Boolean(item.appointment)),
       status: 1, // 1: Confirmado, 2: Preparando, 3: A Caminho, 4: Entregue
       driverName: 'Marcos Vinicius',
       driverVehicle: 'Honda CG 160 Fan - Placa BRA-2E19',
       estimatedTime: '28 minutos'
     };
+
+    const newAppointments = state.cart.filter(item => item.appointment).map(item => ({
+      id: item.id || `appointment-${Date.now()}`,
+      product: item.product,
+      date: item.appointment.date,
+      time: item.appointment.time,
+      orderId: orderNumber
+    }));
+    if (newAppointments.length > 0) {
+      state.appointments = [...state.appointments, ...newAppointments];
+      saveAppointments();
+    }
 
     // Limpa carrinho
     state.cart = [];
@@ -858,7 +1664,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeModal('checkout-modal');
     openOrderTracker(state.activeOrder);
-    showToast(`Pedido #${orderNumber} confirmado com sucesso!`);
+    showToast(state.activeOrder.appointmentOnly
+      ? `Agendamento do pedido #${orderNumber} confirmado!`
+      : `Pedido #${orderNumber} confirmado com sucesso!`);
   }
 
   // Rastreador de Pedido em Tempo Real (Visual Stepper)
@@ -941,6 +1749,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openCartDrawer() {
+    closeAppointmentsDrawer();
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
     if (drawer && overlay) {
@@ -954,6 +1763,28 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeCartDrawer() {
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
+    if (drawer && overlay) {
+      drawer.classList.add('translate-x-full');
+      setTimeout(() => overlay.classList.add('hidden'), 300);
+      document.body.style.overflow = '';
+    }
+  }
+
+  function openAppointmentsDrawer() {
+    closeCartDrawer();
+    const drawer = document.getElementById('appointments-drawer');
+    const overlay = document.getElementById('appointments-overlay');
+    if (drawer && overlay) {
+      updateAppointmentsUI();
+      overlay.classList.remove('hidden');
+      setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeAppointmentsDrawer() {
+    const drawer = document.getElementById('appointments-drawer');
+    const overlay = document.getElementById('appointments-overlay');
     if (drawer && overlay) {
       drawer.classList.add('translate-x-full');
       setTimeout(() => overlay.classList.add('hidden'), 300);
@@ -977,6 +1808,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!input) return;
       input.addEventListener('input', (e) => {
         state.searchQuery = e.target.value;
+        state.visibleProductCount = PRODUCT_PAGE_SIZE;
         // Sincroniza os outros inputs
         searchInputs.forEach(other => {
           if (other && other !== input) other.value = e.target.value;
@@ -996,7 +1828,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.category-filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const cat = btn.getAttribute('data-category');
-        filterByCategory(cat);
+        state.activeCategory = cat;
+        state.visibleProductCount = PRODUCT_PAGE_SIZE;
+        updateCategoryFilterButtons();
+        renderProducts();
+        scrollToProductsSection();
       });
     });
 
@@ -1005,7 +1841,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (priceFilterSelect) {
       priceFilterSelect.addEventListener('change', (e) => {
         state.priceFilter = e.target.value;
+        state.visibleProductCount = PRODUCT_PAGE_SIZE;
         renderProducts();
+        scrollToProductsSection();
       });
     }
 
@@ -1017,6 +1855,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCloseCart) btnCloseCart.addEventListener('click', closeCartDrawer);
     const cartOverlay = document.getElementById('cart-overlay');
     if (cartOverlay) cartOverlay.addEventListener('click', closeCartDrawer);
+    document.querySelectorAll('.btn-open-appointments').forEach(button => {
+      button.addEventListener('click', openAppointmentsDrawer);
+    });
+    const closeAppointmentsButton = document.getElementById('btn-close-appointments');
+    if (closeAppointmentsButton) closeAppointmentsButton.addEventListener('click', closeAppointmentsDrawer);
+    const appointmentsOverlay = document.getElementById('appointments-overlay');
+    if (appointmentsOverlay) appointmentsOverlay.addEventListener('click', closeAppointmentsDrawer);
 
     // 5. Cupom de Desconto no Carrinho
     const btnApplyCoupon = document.getElementById('btn-apply-coupon');
@@ -1046,12 +1891,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnNextStep1.addEventListener('click', () => {
         // Validação simples de campos obrigatórios
         const name = document.getElementById('checkout-name').value.trim();
+        const phone = document.getElementById('checkout-phone').value.trim();
         const cep = document.getElementById('checkout-cep').value.trim();
         const street = document.getElementById('checkout-street').value.trim();
         const number = document.getElementById('checkout-number').value.trim();
+        const hasDeliveryItems = state.cart.some(item => !item.appointment);
 
-        if (!name || !cep || !street || !number) {
-          showToast('Preencha todos os campos obrigatórios de endereço.', 'error');
+        if (!name || !phone || (hasDeliveryItems && (!cep || !street || !number))) {
+          showToast(hasDeliveryItems
+            ? 'Preencha seus dados e os campos obrigatórios de endereço.'
+            : 'Preencha seu nome e telefone para confirmar o atendimento.', 'error');
           return;
         }
         switchCheckoutStep(2);
@@ -1076,6 +1925,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnConfirmOrder = document.getElementById('btn-confirm-order');
     if (btnConfirmOrder) {
       btnConfirmOrder.addEventListener('click', completeOrder);
+    }
+
+    const appointmentDate = document.getElementById('appointment-date');
+    if (appointmentDate) {
+      appointmentDate.addEventListener('change', populateAppointmentTimes);
+    }
+
+    const appointmentForm = document.getElementById('appointment-form');
+    if (appointmentForm) {
+      appointmentForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const pending = state.pendingAppointment;
+        const date = appointmentDate && appointmentDate.value;
+        const time = document.getElementById('appointment-time').value;
+        const product = pending && MARKETPLACE_DATA.products.find(item => item.id === pending.productId);
+        const availableTimes = getAvailableAppointmentTimes(date, pending && pending.businessId);
+
+        if (!pending || !product || !date || date < getLocalDateValue(new Date()) || !time || !availableTimes.includes(time)) {
+          showToast('Selecione uma data e um horário disponível para o serviço.', 'error');
+          return;
+        }
+
+        addToCart(product.id, pending.quantity, { date, time });
+        state.pendingAppointment = null;
+        closeModal('appointment-modal');
+      });
     }
 
     // 8. Auto-completar CEP Simulado
@@ -1165,6 +2040,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    const managerBusinessForm = document.getElementById('manager-business-form');
+    if (managerBusinessForm) {
+      managerBusinessForm.addEventListener('submit', createBusiness);
+    }
+    const managerProductForm = document.getElementById('manager-product-form');
+    if (managerProductForm) {
+      managerProductForm.addEventListener('submit', createProduct);
+    }
     // 14. Formulário de Entregador
     const driverForm = document.getElementById('driver-form');
     if (driverForm) {
@@ -1220,6 +2103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (chatForm && chatInput && chatMessages) {
+      let lastFallbackIndex = -1;
       chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const text = chatInput.value.trim();
@@ -1228,36 +2112,47 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mensagem do usuário
         const userMsg = document.createElement('div');
         userMsg.className = 'text-right my-2';
-        userMsg.innerHTML = `
-          <div class="inline-block bg-[#087BD4] text-white text-xs px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[85%] text-left">
-            ${text}
-          </div>
-        `;
+        const userBubble = document.createElement('div');
+        userBubble.className = 'inline-block bg-[#087BD4] text-white text-xs px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[85%] text-left';
+        userBubble.textContent = text;
+        userMsg.appendChild(userBubble);
         chatMessages.appendChild(userMsg);
         chatInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         // Resposta inteligente automática em Português
+        const normalizedText = text.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         setTimeout(() => {
-          let reply = 'Obrigado por nos contatar! Um de nossos atendentes entrará em contato em instantes.';
-          const lower = text.toLowerCase();
-          if (lower.includes('rastrear') || lower.includes('pedido') || lower.includes('onde está')) {
+          let reply;
+          const lower = normalizedText;
+          if (lower.includes('rastrear') || lower.includes('pedido') || lower.includes('onde esta')) {
             reply = 'Para rastrear seu pedido, clique no ícone "Meus Pedidos" ou utilize o código recebido no WhatsApp/E-mail.';
           } else if (lower.includes('parceiro') || lower.includes('empresa') || lower.includes('vender')) {
-            reply = 'Para cadastrar sua loja, utilize a seção "Para Empresas" ou clique em "Quero ser Parceiro" no menu.';
+            reply = 'Para cadastrar lojas e produtos, abra "Painel Loja" no topo da página. Você poderá adicionar lojas, cadastrar produtos e remover itens do catálogo.';
+          } else if (lower.includes('produto') || lower.includes('item') || lower.includes('catalogo') || lower.includes('loja')) {
+            reply = 'No "Painel Loja", cadastre uma loja e depois escolha-a no formulário de produto para incluir itens com preço, descrição e imagem.';
           } else if (lower.includes('entregador') || lower.includes('entrega') || lower.includes('trabalhar')) {
             reply = 'Entregadores autônomos podem se registrar na aba "Entregadores" enviando CNH e dados do veículo.';
-          } else if (lower.includes('pix') || lower.includes('pagamento') || lower.includes('cartão')) {
+          } else if (lower.includes('pix') || lower.includes('pagamento') || lower.includes('cartao')) {
             reply = 'Aceitamos pagamentos instantâneos via Pix com aprovação em segundos, além de cartões de crédito e débito.';
+          } else if (/\b(bom dia|boa tarde|boa noite|ola|oi|e ai)\b/.test(lower)) {
+            reply = 'Olá! Posso ajudar com pedidos, pagamentos, entregas ou com o cadastro de lojas e produtos. O que você precisa?';
+          } else {
+            const fallbackReplies = [
+              'Ainda não tenho essa informação. Posso orientar sobre pedidos, pagamentos, entregas e cadastro de lojas.',
+              'Não encontrei uma resposta para isso. Você pode perguntar sobre rastreamento, formas de pagamento ou como adicionar produtos.',
+              'Posso ajudar com o catálogo e os pedidos do WebService. Qual desses assuntos você quer consultar?'
+            ];
+            lastFallbackIndex = (lastFallbackIndex + 1) % fallbackReplies.length;
+            reply = fallbackReplies[lastFallbackIndex];
           }
 
           const botMsg = document.createElement('div');
           botMsg.className = 'text-left my-2';
-          botMsg.innerHTML = `
-            <div class="inline-block bg-[#071522] border border-[#162C46] text-[#B8C7D8] text-xs px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%]">
-              ${reply}
-            </div>
-          `;
+          const botBubble = document.createElement('div');
+          botBubble.className = 'inline-block bg-[#071522] border border-[#162C46] text-[#B8C7D8] text-xs px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%]';
+          botBubble.textContent = reply;
+          botMsg.appendChild(botBubble);
           chatMessages.appendChild(botMsg);
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 800);
@@ -1397,6 +2292,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.closeModal = closeModal;
     window.openCartDrawer = openCartDrawer;
     window.closeCartDrawer = closeCartDrawer;
+    window.openAppointmentsDrawer = openAppointmentsDrawer;
+    window.closeAppointmentsDrawer = closeAppointmentsDrawer;
     window.openPartnerModal = openPartnerModal;
     window.openDriverModal = openDriverModal;
     window.openAuthModal = openAuthModal;
@@ -1415,9 +2312,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // INICIALIZAÇÃO GERAL
   // ========================================================================
   function init() {
+    loadSavedCatalog();
+    loadSavedAppointments();
+    ensureUniqueProductImages();
     renderCategories();
     renderBusinesses();
     renderProducts();
+    renderManagerCatalog();
     renderPartnerPlans();
     renderFaq();
     updateCartUI();
