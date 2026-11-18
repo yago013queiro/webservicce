@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebService - Uma Plataforma, Várias Empresas, Infinitas Possibilidades</title>
+  
+  <!-- Meta Tags SEO & Open Graph em Português -->
+  <meta name="description" content="WebService - Plataforma digital integrada multi-lojas que conecta clientes, estabelecimentos comerciais e entregadores. Variedade, segurança e agilidade em um só lugar." />
+  <meta name="keywords" content="webservice, marketplace, delivery, compras online, farmácia, supermercado, restaurantes, entregas rápidas, brasil" />
+  
+  <!-- Tailwind CSS CDN v3.4 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#030A12',
+              navy: '#071522',
+              card: '#0B1B2A',
+              border: '#162C46',
+              cyan: '#39BDF5',
+              blue: '#087BD4',
+              lightBlue: '#A8E1FF',
+              text: '#F5F9FF',
+              muted: '#B8C7D8'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Outfit', 'sans-serif'],
+            script: ['Caveat', 'cursive']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="bg-[#030A12] text-[#F5F9FF] antialiased selection:bg-[#39BDF5] selection:text-[#030A12]">
+
+  <!-- ====================================================================
+       1. TOPO DE AVISOS / ROLE SWITCHER DEMO (BUSINESS MODEL CANVAS)
+       Permite ao avaliador alternar e visualizar as 3 personas do Canvas
+       ==================================================================== -->
+  <div class="bg-gradient-to-r from-[#071522] via-[#0B1B2A] to-[#071522] border-b border-[#162C46] py-2 px-4 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-[#B8C7D8]">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#39BDF5]/15 text-[#39BDF5] font-semibold text-[11px] border border-[#39BDF5]/30">
+          <i data-lucide="sparkles" class="w-3 h-3"></i> Protótipo Funcional
+        </span>
+        <span class="hidden sm:inline">Explore o ecossistema WebService:</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-[#6C829D] hidden md:inline">Alternar visualização do Canvas:</span>
+        <button class="btn-role-preview px-2.5 py-1 rounded-lg bg-[#39BDF5]/20 text-[#39BDF5] hover:bg-[#39BDF5]/30 border border-[#39BDF5]/40 transition-colors font-medium flex items-center gap-1" data-role="customer">
+          <i data-lucide="shopping-bag" class="w-3 h-3"></i> Cliente (Ativo)
+        </button>
+        <button class="btn-role-preview px-2.5 py-1 rounded-lg bg-[#071522] text-[#B8C7D8] hover:text-[#39BDF5] hover:border-[#39BDF5]/40 border border-[#162C46] transition-colors font-medium flex items-center gap-1" data-role="partner">
+          <i data-lucide="store" class="w-3 h-3"></i> Painel Loja
+        </button>
+        <button class="btn-role-preview px-2.5 py-1 rounded-lg bg-[#071522] text-[#B8C7D8] hover:text-[#39BDF5] hover:border-[#39BDF5]/40 border border-[#162C46] transition-colors font-medium flex items-center gap-1" data-role="driver">
+          <i data-lucide="bike" class="w-3 h-3"></i> Painel Entregador
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       2. HEADER E NAVEGAÇÃO PRINCIPAL (ESTILO TECHPRO)
+       ==================================================================== -->
+  <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Logotipo Estilo TechPro da Imagem 2 -->
+      <a href="#inicio" class="flex items-center gap-3 group shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] flex items-center justify-center text-[#030A12] font-black text-xl shadow-[0_0_20px_rgba(57,189,245,0.4)] group-hover:scale-105 transition-transform">
+          &lt;/&gt;
+        </div>
+        <div>
+          <div class="flex items-center gap-1">
+            <span class="text-2xl font-black tracking-tight text-white font-['Outfit']">WebService</span>
+            <span class="w-2 h-2 rounded-full bg-[#39BDF5] glow-cyan"></span>
+          </div>
+          <span class="text-[9px] uppercase tracking-widest text-[#39BDF5] font-bold block -mt-1">
+            Marketplace & Delivery
+          </span>
+        </div>
+      </a>
+
+      <!-- Menu Desktop com Traço Azul Interativo em Todos os Atalhos -->
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-medium">
+        <a href="#inicio" class="nav-item-link active">Início</a>
+        <a href="#como-funciona" class="nav-item-link">Como Funciona</a>
+        <a href="#categorias" class="nav-item-link">Categorias</a>
+        <a href="#empresas" class="nav-item-link">Para Empresas</a>
+        <a href="#entregadores" class="nav-item-link">Entregadores</a>
+        <a href="#suporte" class="nav-item-link">Contato</a>
+      </nav>
+
+      <!-- Ações do Header (Busca, Carrinho, Login) -->
+      <div class="flex items-center gap-3">
+        <!-- Campo de Busca Compacto com Ícone -->
+        <div class="relative hidden sm:block w-48 xl:w-64">
+          <input 
+            type="text" 
+            id="nav-search-input"
+            placeholder="Buscar lojas e produtos..." 
+            class="w-full bg-[#071522] border border-[#162C46] rounded-full py-2 pl-9 pr-4 text-xs text-white placeholder-[#6C829D] focus:outline-none focus:border-[#39BDF5] focus:ring-1 focus:ring-[#39BDF5] transition-all"
+          />
+          <i data-lucide="search" class="w-3.5 h-3.5 text-[#6C829D] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        </div>
+
+        <!-- Botão do Carrinho com Badge Dinâmico -->
+        <button 
+          class="btn-open-cart relative p-2.5 rounded-full bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] text-white hover:text-[#39BDF5] transition-colors"
+          title="Abrir carrinho de compras"
+        >
+          <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+          <span class="cart-badge hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#39BDF5] text-[#030A12] text-[11px] font-black items-center justify-center shadow-lg animate-pulse">
+            0
+          </span>
+        </button>
+
+        <!-- Botão Entrar (Abre Modal de Login) -->
+        <button 
+          class="btn-open-auth hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#162C46] bg-[#071522] hover:border-[#39BDF5] hover:bg-[#39BDF5]/10 text-white hover:text-[#39BDF5] text-xs font-bold transition-all"
+          data-tab="login"
+        >
+          <i data-lucide="user" class="w-3.5 h-3.5"></i>
+          <span>Entrar</span>
+        </button>
+
+        <!-- Botão Criar Conta / Começar Agora -->
+        <button 
+          class="btn-open-auth btn-primary px-5 py-2 text-xs font-bold shadow-[0_0_15px_rgba(57,189,245,0.3)]"
+          data-tab="register-client"
+        >
+          <span>Criar Conta</span>
+        </button>
+
+        <!-- Botão Hambúrguer Mobile -->
+        <button 
+          id="mobile-menu-btn"
+          class="lg:hidden p-2 rounded-xl bg-[#071522] border border-[#162C46] text-[#B8C7D8] hover:text-white"
+          title="Menu mobile"
+        >
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Menu Mobile Drawer -->
+  <div id="mobile-menu-drawer" class="fixed inset-0 z-50 bg-[#030A12]/95 backdrop-blur-xl hidden flex-col p-6">
+    <div class="flex items-center justify-between pb-6 border-b border-[#162C46]">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-[#39BDF5] text-[#030A12] font-black flex items-center justify-center text-sm">
+          &lt;/&gt;
+        </div>
+        <span class="font-bold text-lg text-white">WebService</span>
+      </div>
+      <button id="mobile-menu-close" class="p-2 text-[#B8C7D8] hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <nav class="flex flex-col gap-5 py-8 text-lg font-semibold text-[#B8C7D8]">
+      <a href="#inicio" class="mobile-nav-link text-white hover:text-[#39BDF5]">Início</a>
+      <a href="#como-funciona" class="mobile-nav-link hover:text-[#39BDF5]">Como Funciona</a>
+      <a href="#categorias" class="mobile-nav-link hover:text-[#39BDF5]">Categorias</a>
+      <a href="#empresas" class="mobile-nav-link hover:text-[#39BDF5]">Para Empresas</a>
+      <a href="#entregadores" class="mobile-nav-link hover:text-[#39BDF5]">Entregadores</a>
+      <a href="#suporte" class="mobile-nav-link hover:text-[#39BDF5]">Contato</a>
+    </nav>
+
+    <div class="mt-auto pt-6 border-t border-[#162C46] flex flex-col gap-3">
+      <button class="btn-open-auth w-full py-3 rounded-full border border-[#162C46] text-white font-bold text-sm" data-tab="login">
+        Entrar na Conta
+      </button>
+      <button class="btn-open-auth btn-primary w-full py-3 text-sm font-bold" data-tab="register-client">
+        Cadastrar-se Gratuitamente
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       3. HERO SECTION (DIRETAMENTE INSPIRADA NA IMAGEM 2 - TECHPRO)
+       ==================================================================== -->
+  <section id="inicio" class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden">
+    <!-- Efeitos de Luz de Fundo Azul Ciano -->
+    <div class="absolute top-10 right-1/4 w-96 h-96 bg-[#087BD4]/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 left-10 w-80 h-80 bg-[#39BDF5]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Coluna Esquerda: Textos de Impacto e Chamadas -->
+        <div class="lg:col-span-7 space-y-6 text-left">
+          
+          <!-- Eyebrow Tag em Ciano Elétrico -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#39BDF5]/10 border border-[#39BDF5]/30 text-[#39BDF5] text-xs font-bold tracking-widest uppercase">
+            <span class="w-2 h-2 rounded-full bg-[#39BDF5] animate-ping"></span>
+            COMODIDADE NA PALMA DA SUA MÃO
+          </div>
+
+          <!-- Título Principal com Destaque Ciano -->
+          <h1 class="text-4xl sm:text-5xl xl:text-6xl font-black text-white leading-[1.1] tracking-tight font-['Outfit']">
+            Todas as suas compras <br />
+            <span class="text-[#39BDF5] glow-cyan">em um só lugar.</span>
+          </h1>
+
+          <!-- Texto de Apoio em Tom Neutro Elegante -->
+          <p class="text-base sm:text-lg text-[#B8C7D8] leading-relaxed max-w-2xl">
+            Encontre produtos das melhores empresas, faça seus pedidos com facilidade e receba tudo onde estiver com agilidade, segurança e suporte dedicado.
+          </p>
+
+          <!-- Barra de Busca Rápida no Hero -->
+          <div class="max-w-xl relative flex items-center">
+            <div class="relative w-full">
+              <input 
+                type="text" 
+                id="hero-search-input"
+                placeholder="O que você precisa hoje? (ex: hambúrguer, remédio, fone...)"
+                class="w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-full py-3.5 pl-12 pr-32 text-sm text-white placeholder-[#6C829D] shadow-[0_10px_25px_rgba(0,0,0,0.5)] focus:outline-none transition-all"
+              />
+              <i data-lucide="search" class="w-5 h-5 text-[#39BDF5] absolute left-4 top-1/2 -translate-y-1/2"></i>
+              <button 
+                onclick="document.getElementById('produtos').scrollIntoView({behavior:'smooth'})"
+                class="absolute right-1.5 top-1/2 -translate-y-1/2 btn-primary px-5 py-2 text-xs font-bold"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+
+          <!-- Botões de Ação Principais (CTAs) -->
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="#produtos" class="btn-primary px-7 py-3.5 text-sm font-bold group">
+              <span>Explorar Produtos</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            
+            <button class="btn-open-partner btn-outline px-7 py-3.5 text-sm font-bold">
+              <i data-lucide="store" class="w-4 h-4 text-[#39BDF5]"></i>
+              <span>Seja uma Empresa Parceira</span>
+            </button>
+          </div>
+
+          <!-- Indicador de Confiança -->
+          <div class="flex items-center gap-3 pt-3 text-xs text-[#B8C7D8]">
+            <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            </div>
+            <span>Praticidade, variedade e conveniência para o seu dia a dia.</span>
+          </div>
+
+          <!-- Mini Estatísticas do Ecossistema -->
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-[#162C46]/80 max-w-lg">
+            <div>
+              <p class="text-2xl font-black text-white font-['Outfit']">+1.500</p>
+              <p class="text-xs text-[#6C829D]">Empresas Conectadas</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-[#39BDF5] font-['Outfit']">28 min</p>
+              <p class="text-xs text-[#6C829D]">Tempo Médio de Entrega</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-white font-['Outfit']">99.4%</p>
+              <p class="text-xs text-[#6C829D]">Satisfação dos Clientes</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Imagem Tecnológica + Cards Flutuantes (Inspirada no TechPro) -->
+        <div class="lg:col-span-5 relative">
+          
+          <!-- Elemento Manuscrito Flutuante (Estilo Imagem 2: "Conectando pessoas e tecnologia") -->
+          <div class="absolute -top-10 -right-2 md:right-4 z-20 font-handwriting text-2xl sm:text-3xl text-[#39BDF5] transform -rotate-6 pointer-events-none glow-cyan">
+            Conectando pessoas, empresas e entregadores ✨
+          </div>
+
+          <!-- Container do Mockup Visual com Borda Luminous -->
+          <div class="relative rounded-3xl overflow-hidden border border-[#39BDF5]/40 shadow-[0_0_50px_rgba(57,189,245,0.25)] bg-[#071522] group">
+            
+            <img 
+              src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=900&auto=format&fit=crop&q=80" 
+              alt="Ambiente digital moderno e tecnológico" 
+              class="w-full h-[430px] object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80"
+            />
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-[#030A12] via-[#071522]/40 to-transparent"></div>
+
+            <!-- Overlay com Elemento de Laptop e Pedidos em Tempo Real -->
+            <div class="absolute inset-x-6 bottom-6 space-y-3">
+              
+              <!-- Card Flutuante 1: Notificação de Entrega Rápida -->
+              <div class="glass-panel p-3.5 rounded-2xl flex items-center gap-3.5 shadow-xl animate-float">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-[#030A12] shrink-0 font-bold">
+                  <i data-lucide="check" class="w-5 h-5"></i>
+                </div>
+                <div class="min-w-0 flex-grow">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white">Pedido #8942 Entregue!</span>
+                    <span class="text-[10px] text-emerald-400 font-semibold">Há 2 min</span>
+                  </div>
+                  <p class="text-[11px] text-[#B8C7D8] truncate">Bistrô & Burger Artesanal • 22 min de rota</p>
+                </div>
+              </div>
+
+              <!-- Card Flutuante 2: Avaliação 5 Estrelas -->
+              <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between shadow-xl animate-float-slight">
+                <div class="flex items-center gap-3">
+                  <div class="flex -space-x-2">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" class="w-7 h-7 rounded-full border-2 border-[#0B1B2A] object-cover" />
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80" class="w-7 h-7 rounded-full border-2 border-[#0B1B2A] object-cover" />
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&auto=format&fit=crop&q=80" class="w-7 h-7 rounded-full border-2 border-[#0B1B2A] object-cover" />
+                  </div>
+                  <span class="text-xs font-semibold text-white">+12.400 clientes satisfeitos</span>
+                </div>
+                <div class="flex items-center gap-1 text-amber-400">
+                  <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                  <span class="text-xs font-bold text-white">4.9</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       4. FAIXA DE BENEFÍCIOS HORIZONTAL (ESTILO TECHPRO STRIP DA IMAGEM 2)
+       Fundo ciano-claro com ícones escuros de alto contraste
+       ==================================================================== -->
+  <section class="tech-feature-strip py-8 shadow-2xl relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 lg:divide-x divide-[#087BD4]/20">
+        
+        <!-- Benefício 1: Praticidade -->
+        <div class="flex items-start gap-4 pt-4 sm:pt-0 lg:pl-6 first:pl-0">
+          <div class="w-12 h-12 rounded-xl bg-[#030A12] text-[#39BDF5] flex items-center justify-center shrink-0 shadow-md">
+            <i data-lucide="home" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-lg font-bold text-[#030A12] mb-1">Praticidade</h4>
+            <p class="text-xs text-[#071522]/80 leading-relaxed font-medium">
+              Faça suas compras sem sair de casa com máxima comodidade.
+            </p>
+          </div>
+        </div>
+
+        <!-- Benefício 2: Segurança -->
+        <div class="flex items-start gap-4 pt-4 sm:pt-0 lg:pl-6">
+          <div class="w-12 h-12 rounded-xl bg-[#030A12] text-[#39BDF5] flex items-center justify-center shrink-0 shadow-md">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-lg font-bold text-[#030A12] mb-1">Segurança</h4>
+            <p class="text-xs text-[#071522]/80 leading-relaxed font-medium">
+              Seus dados protegidos e pagamentos 100% criptografados.
+            </p>
+          </div>
+        </div>
+
+        <!-- Benefício 3: Agilidade -->
+        <div class="flex items-start gap-4 pt-4 sm:pt-0 lg:pl-6">
+          <div class="w-12 h-12 rounded-xl bg-[#030A12] text-[#39BDF5] flex items-center justify-center shrink-0 shadow-md">
+            <i data-lucide="zap" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-lg font-bold text-[#030A12] mb-1">Agilidade</h4>
+            <p class="text-xs text-[#071522]/80 leading-relaxed font-medium">
+              Encontre o que precisa e receba onde estiver em minutos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Benefício 4: Variedade -->
+        <div class="flex items-start gap-4 pt-4 sm:pt-0 lg:pl-6">
+          <div class="w-12 h-12 rounded-xl bg-[#030A12] text-[#39BDF5] flex items-center justify-center shrink-0 shadow-md">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-lg font-bold text-[#030A12] mb-1">Variedade</h4>
+            <p class="text-xs text-[#071522]/80 leading-relaxed font-medium">
+              Diversas empresas e categorias em uma só plataforma unificada.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       5. CATEGORIAS DE PRODUTOS INTERATIVAS
+       ==================================================================== -->
+  <section id="categorias" class="py-20 bg-[#071522]/40 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Cabeçalho da Seção com Link "Ver Todas" -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div>
+          <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+            NOSSAS CATEGORIAS
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+            Encontre tudo o que você precisa
+          </h2>
+          <p class="text-sm text-[#B8C7D8] mt-2 max-w-xl">
+            Explore diferentes categorias e descubra novas possibilidades de compra perto de você.
+          </p>
+        </div>
+
+        <a href="#produtos" class="btn-outline px-5 py-2 text-xs font-bold shrink-0 self-start md:self-end">
+          <span>Ver Todas as Categorias</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+
+      <!-- Grid com as 8 Categorias -->
+      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       6. EMPRESAS PARCEIRAS EM DESTAQUE
+       ==================================================================== -->
+  <section id="empresas" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div>
+          <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+            ESTABELECIMENTOS VERIFICADOS
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+            Empresas que facilitam sua vida
+          </h2>
+          <p class="text-sm text-[#B8C7D8] mt-2 max-w-xl">
+            Descubra estabelecimentos parceiros e encontre seus produtos favoritos com entrega rápida.
+          </p>
+        </div>
+
+        <button class="btn-open-partner btn-primary px-5 py-2.5 text-xs font-bold shrink-0 self-start md:self-end">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+          <span>Cadastrar Meu Negócio</span>
+        </button>
+      </div>
+
+      <!-- Grid de Empresas Parceiras -->
+      <div id="businesses-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       7. PRODUTOS EM DESTAQUE (VITRINE DO MARKETPLACE)
+       ==================================================================== -->
+  <section id="produtos" class="py-20 bg-[#071522]/50 relative border-y border-[#162C46]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+          VITRINE DE OFERTAS
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+          Produtos em destaque
+        </h2>
+        <p class="text-sm text-[#B8C7D8] mt-2">
+          Itens mais pedidos da semana com descontos exclusivos e garantia de qualidade.
+        </p>
+      </div>
+
+      <!-- Barra de Filtros Interativos e Ordenação -->
+      <div class="bg-[#0B1B2A] p-4 rounded-2xl border border-[#162C46] mb-8 space-y-4">
+        
+        <!-- Filtros Rápidos de Categoria em Botões Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap bg-[#39BDF5] text-[#030A12]" data-category="all">
+            Todos os Produtos
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="alimentacao">
+            Alimentação
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="supermercados">
+            Supermercados
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="farmacias">
+            Farmácias
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="eletronicos">
+            Eletrônicos
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="roupas">
+            Moda & Roupas
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="beleza">
+            Beleza & Cuidados
+          </button>
+          <button class="category-filter-btn px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap bg-[#0B1B2A] text-[#B8C7D8] hover:text-[#39BDF5]" data-category="casa">
+            Casa & Decoração
+          </button>
+        </div>
+
+        <!-- Linha Inferior com Busca e Filtro de Preço -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#162C46]">
+          <div class="relative w-full sm:w-72">
+            <input 
+              type="text" 
+              id="products-search-input"
+              placeholder="Filtrar por nome ou loja..." 
+              class="w-full bg-[#071522] border border-[#162C46] rounded-xl py-2 pl-9 pr-3 text-xs text-white placeholder-[#6C829D] focus:outline-none focus:border-[#39BDF5]"
+            />
+            <i data-lucide="search" class="w-3.5 h-3.5 text-[#6C829D] absolute left-3 top-1/2 -translate-y-1/2"></i>
+          </div>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <span id="products-count" class="text-xs text-[#6C829D]">Carregando produtos...</span>
+            
+            <select id="price-filter-select" class="bg-[#071522] border border-[#162C46] text-xs text-[#B8C7D8] rounded-xl px-3 py-2 focus:outline-none focus:border-[#39BDF5]">
+              <option value="all">Todas as faixas de preço</option>
+              <option value="under-50">Até R$ 50,00</option>
+              <option value="50-150">R$ 50,00 a R$ 150,00</option>
+              <option value="over-150">Acima de R$ 150,00</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Grid com os Cards de Produtos -->
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       8. COMO FUNCIONA (CANVAS: 3 PASSOS DO WEB SERVICE)
+       ==================================================================== -->
+  <section id="como-funciona" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+          FLUXO SIMPLES E INTUITIVO
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+          Comprar ficou muito mais fácil
+        </h2>
+        <p class="text-sm text-[#B8C7D8] mt-2">
+          Em apenas três etapas rápidas você recebe o que precisa no conforto da sua residência.
+        </p>
+      </div>
+
+      <!-- 3 Passos Conectados -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        
+        <!-- Passo 1 -->
+        <div class="step-connector glow-card bg-[#0B1B2A] rounded-2xl p-8 border border-[#162C46] text-center relative group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] text-[#030A12] flex items-center justify-center font-black text-2xl mx-auto mb-6 shadow-[0_0_25px_rgba(57,189,245,0.35)] group-hover:scale-110 transition-transform">
+            1
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Escolha seus produtos</h3>
+          <p class="text-sm text-[#B8C7D8] leading-relaxed">
+            Navegue pelos catálogos de restaurantes, mercados, farmácias e boutiques parceiras em uma só tela.
+          </p>
+        </div>
+
+        <!-- Passo 2 -->
+        <div class="step-connector glow-card bg-[#0B1B2A] rounded-2xl p-8 border border-[#162C46] text-center relative group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] text-[#030A12] flex items-center justify-center font-black text-2xl mx-auto mb-6 shadow-[0_0_25px_rgba(57,189,245,0.35)] group-hover:scale-110 transition-transform">
+            2
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Faça seu pedido</h3>
+          <p class="text-sm text-[#B8C7D8] leading-relaxed">
+            Adicione ao carrinho e pague com segurança via Pix com aprovação imediata ou cartão parcelado.
+          </p>
+        </div>
+
+        <!-- Passo 3 -->
+        <div class="glow-card bg-[#0B1B2A] rounded-2xl p-8 border border-[#162C46] text-center relative group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] text-[#030A12] flex items-center justify-center font-black text-2xl mx-auto mb-6 shadow-[0_0_25px_rgba(57,189,245,0.35)] group-hover:scale-110 transition-transform">
+            3
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Receba onde estiver</h3>
+          <p class="text-sm text-[#B8C7D8] leading-relaxed">
+            O entregador retira no estabelecimento parceiro e leva diretamente ao seu endereço com rastreio ao vivo.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Banner Interativo de Simulação do Pedido -->
+      <div class="mt-12 bg-gradient-to-r from-[#087BD4]/20 via-[#0B1B2A] to-[#39BDF5]/20 rounded-2xl p-6 sm:p-8 border border-[#39BDF5]/30 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-[#39BDF5]/20 text-[#39BDF5] flex items-center justify-center shrink-0 border border-[#39BDF5]/40">
+            <i data-lucide="map-pin" class="w-6 h-6 animate-bounce"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-white">Deseja ver como funciona o rastreamento em tempo real?</h4>
+            <p class="text-xs text-[#B8C7D8]">Acompanhe o entregador no mapa e o status de preparo do seu pedido.</p>
+          </div>
+        </div>
+        <button 
+          onclick="simulateOrderTracking()"
+          class="btn-primary px-6 py-2.5 text-xs font-bold shrink-0"
+        >
+          Simular Rastreamento de Entrega
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       9. SEÇÃO EXCLUSIVA PARA EMPRESAS PARCEIRAS (CANVAS: B2B & PLANOS)
+       ==================================================================== -->
+  <section class="py-20 relative bg-gradient-to-b from-[#030A12] via-[#071522] to-[#030A12]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Card Hero de Conversão B2B -->
+      <div class="relative rounded-3xl overflow-hidden border border-[#39BDF5]/40 bg-[#0B1B2A] p-8 sm:p-12 mb-16 shadow-[0_0_50px_rgba(8,123,212,0.2)]">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 space-y-6">
+            <span class="badge-tech bg-[#39BDF5]/20 text-[#39BDF5]">
+              OPORTUNIDADE PARA COMERCIANTES
+            </span>
+            <h2 class="text-3xl sm:text-5xl font-black text-white font-['Outfit']">
+              Leve sua empresa mais longe.
+            </h2>
+            <p class="text-base text-[#B8C7D8] leading-relaxed">
+              Divulgue seus produtos, receba pedidos online e conquiste novos clientes sem precisar desenvolver seu próprio aplicativo. Você foca na qualidade do seu negócio, nós cuidamos da tecnologia e da entrega.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#F5F9FF]">
+              <div class="flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-[#39BDF5]"></i>
+                <span>Mais visibilidade para sua marca</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-[#39BDF5]"></i>
+                <span>Novos canais de venda sem custos fixos</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-[#39BDF5]"></i>
+                <span>Gestão centralizada de pedidos em tempo real</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-[#39BDF5]"></i>
+                <span>Rede pronta de entregadores qualificados</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 pt-3">
+              <button class="btn-open-partner btn-primary px-8 py-3.5 text-sm font-bold">
+                Quero ser Parceiro
+              </button>
+              <button class="btn-role-preview btn-outline px-6 py-3.5 text-sm font-bold" data-role="partner">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-[#39BDF5]"></i>
+                <span>Ver Demonstração do Painel</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 relative">
+            <div class="rounded-2xl border border-[#162C46] bg-[#071522] p-6 shadow-2xl space-y-4">
+              <div class="flex items-center justify-between border-b border-[#162C46] pb-4">
+                <div>
+                  <span class="text-xs text-[#6C829D]">Faturamento Médio dos Parceiros</span>
+                  <p class="text-2xl font-black text-white font-['Outfit']">+38% em 30 dias</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-[#39BDF5]/15 text-[#39BDF5] flex items-center justify-center font-bold">
+                  <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <div class="space-y-2 text-xs text-[#B8C7D8]">
+                <div class="flex justify-between py-1.5 border-b border-[#162C46]/50">
+                  <span>Tempo de ativação da loja:</span>
+                  <span class="text-white font-semibold">Até 24 horas</span>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-[#162C46]/50">
+                  <span>Taxa de adesão:</span>
+                  <span class="text-emerald-400 font-semibold">Gratuita</span>
+                </div>
+                <div class="flex justify-between py-1.5">
+                  <span>Acompanhamento:</span>
+                  <span class="text-white font-semibold">Suporte com consultor</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Planos de Monetização (Canvas: Fontes de Receita) -->
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+          TRANSPARÊNCIA TOTAL
+        </span>
+        <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+          Planos flexíveis para impulsionar suas vendas
+        </h3>
+        <p class="text-sm text-[#B8C7D8] mt-2">
+          Escolha o modelo que melhor se adapta ao momento da sua empresa. Sem taxas ocultas.
+        </p>
+      </div>
+
+      <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       10. SEÇÃO PARA ENTREGADORES PARCEIROS
+       ==================================================================== -->
+  <section id="entregadores" class="py-20 relative border-t border-[#162C46]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-5 relative order-2 lg:order-1">
+          <div class="rounded-3xl overflow-hidden border border-[#162C46] shadow-[0_0_35px_rgba(57,189,245,0.15)] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=700&auto=format&fit=crop&q=80" 
+              alt="Entregador parceiro com smartphone e rota" 
+              class="w-full h-[400px] object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0B1B2A] via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-6 left-6 right-6 glass-panel p-4 rounded-2xl flex items-center justify-between">
+              <div>
+                <p class="text-xs text-[#39BDF5] font-semibold">Ganhos Semanais Claros</p>
+                <p class="text-sm font-bold text-white">Repasses rápidos e seguros</p>
+              </div>
+              <button class="btn-role-preview btn-outline px-3 py-1.5 text-xs font-semibold" data-role="driver">
+                Ver App do Entregador
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-6 order-1 lg:order-2">
+          <span class="badge-tech bg-[#39BDF5]/15 text-[#39BDF5]">
+            REDE DE ENTREGADORES
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-black text-white font-['Outfit']">
+            Conecte-se a novas oportunidades.
+          </h2>
+          <p class="text-base text-[#B8C7D8] leading-relaxed">
+            Faça parte da nossa rede de entregadores e ajude a levar praticidade para milhares de pessoas, com total flexibilidade de horários e transparência em cada rota.
+          </p>
+
+          <div class="space-y-4">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#39BDF5]/15 text-[#39BDF5] flex items-center justify-center shrink-0 border border-[#39BDF5]/30">
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h5 class="text-sm font-bold text-white">Cadastro simplificado</h5>
+                <p class="text-xs text-[#B8C7D8] mt-0.5">Envie seus documentos pelo formulário online e seja aprovado rapidamente.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#39BDF5]/15 text-[#39BDF5] flex items-center justify-center shrink-0 border border-[#39BDF5]/30">
+                <i data-lucide="navigation" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h5 class="text-sm font-bold text-white">Informações claras sobre os pedidos</h5>
+                <p class="text-xs text-[#B8C7D8] mt-0.5">Visualize distância, ponto de coleta, endereço de entrega e valor exato da corrida antes de aceitar.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#39BDF5]/15 text-[#39BDF5] flex items-center justify-center shrink-0 border border-[#39BDF5]/30">
+                <i data-lucide="shield" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h5 class="text-sm font-bold text-white">Acompanhamento e suporte constante</h5>
+                <p class="text-xs text-[#B8C7D8] mt-0.5">Nossa central está conectada com você em tempo real caso ocorra qualquer imprevisto.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button class="btn-open-driver btn-primary px-8 py-3.5 text-sm font-bold">
+              Cadastre-se como Entregador
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       11. SUPORTE AO CLIENTE, FAQ E CONTATO
+       ==================================================================== -->
+  <section id="suporte" class="py-20 bg-[#071522]/40 relative border-t border-[#162C46]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold text-[#39BDF5] tracking-widest uppercase mb-2 block">
+          CENTRAL DE ATENDIMENTO
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+          Estamos aqui para ajudar.
+        </h2>
+        <p class="text-sm text-[#B8C7D8] mt-2">
+          Precisa de suporte com um pedido ou tem dúvidas sobre a plataforma? Nossa equipe está pronta para tornar sua experiência mais simples.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- FAQ Accordion à Esquerda -->
+        <div class="lg:col-span-7 space-y-4">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-5 h-5 text-[#39BDF5]"></i>
+            Perguntas Frequentes
+          </h3>
+          <div id="faq-accordion" class="space-y-3">
+            <!-- Renderizado dinamicamente via app.js -->
+          </div>
+        </div>
+
+        <!-- Formulário de Contato Direto à Direita -->
+        <div class="lg:col-span-5">
+          <div class="glow-card bg-[#0B1B2A] rounded-2xl p-7 border border-[#162C46]">
+            <h3 class="text-xl font-bold text-white mb-1">Envie uma mensagem</h3>
+            <p class="text-xs text-[#B8C7D8] mb-6">Retornamos seu contato em menos de 2 horas úteis.</p>
+
+            <form id="contact-form" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome Completo</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Seu nome" 
+                  class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3.5 text-xs text-white placeholder-[#6C829D] focus:outline-none"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">E-mail</label>
+                  <input 
+                    type="email" 
+                    required
+                    placeholder="seuemail@exemplo.com" 
+                    class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3.5 text-xs text-white placeholder-[#6C829D] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">WhatsApp / Telefone</label>
+                  <input 
+                    type="tel" 
+                    required
+                    placeholder="(11) 98765-4321" 
+                    class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3.5 text-xs text-white placeholder-[#6C829D] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Assunto</label>
+                <select class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3.5 text-xs text-white focus:outline-none">
+                  <option>Dúvida sobre um pedido</option>
+                  <option>Quero me tornar empresa parceira</option>
+                  <option>Quero ser entregador parceiro</option>
+                  <option>Sugestão ou elogio</option>
+                  <option>Outros assuntos</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Como podemos te ajudar?</label>
+                <textarea 
+                  rows="3" 
+                  required
+                  placeholder="Escreva sua mensagem aqui..." 
+                  class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl p-3.5 text-xs text-white placeholder-[#6C829D] focus:outline-none resize-none"
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary w-full py-3 text-xs font-bold">
+                Enviar Mensagem
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       12. NEWSLETTER E CUPOM DE BOAS-VINDAS
+       ==================================================================== -->
+  <section class="py-14 bg-gradient-to-r from-[#030A12] via-[#071522] to-[#030A12] border-t border-[#162C46]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#39BDF5]/10 border border-[#39BDF5]/30 text-[#39BDF5] text-xs font-bold mb-4">
+        <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+        CUPOM DE BOAS-VINDAS: USE O CÓDIGO <strong>WEBSERVICE10</strong> E GANHE R$ 10 OFF
+      </div>
+
+      <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+        Fique por dentro das novidades
+      </h3>
+      <p class="text-sm text-[#B8C7D8] mt-2 mb-6 max-w-lg mx-auto">
+        Receba novidades, promoções exclusivas da sua região e informações sobre novas empresas cadastradas.
+      </p>
+
+      <form id="newsletter-form" class="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+        <input 
+          type="email" 
+          required
+          placeholder="Digite seu melhor e-mail" 
+          class="flex-grow bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-full py-3 px-5 text-xs text-white placeholder-[#6C829D] focus:outline-none"
+        />
+        <button type="submit" class="btn-primary px-6 py-3 text-xs font-bold shrink-0">
+          Quero Receber Novidades
+        </button>
+      </form>
+      <p class="text-[11px] text-[#6C829D] mt-3">
+        Respeitamos sua privacidade. Cancele o recebimento a qualquer momento.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       13. FOOTER COMPLETO EM PORTUGUÊS (ESTILO TECNOLÓGICO TECHPRO)
+       ==================================================================== -->
+  <footer class="bg-[#02070D] border-t border-[#162C46] pt-16 pb-12 text-[#B8C7D8] text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#162C46]">
+        
+        <!-- Coluna 1: Marca e Missão (Canvas: Proposta de Valor) -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#087BD4] to-[#39BDF5] flex items-center justify-center text-[#030A12] font-black text-lg">
+              &lt;/&gt;
+            </div>
+            <div>
+              <span class="text-xl font-bold text-white font-['Outfit']">WebService</span>
+              <span class="text-[9px] uppercase tracking-widest text-[#39BDF5] font-bold block">
+                Marketplace & Delivery
+              </span>
+            </div>
+          </div>
+          <p class="text-xs text-[#B8C7D8] leading-relaxed max-w-sm">
+            Uma plataforma, várias empresas, infinitas possibilidades. O WebService conecta clientes, estabelecimentos comerciais e entregadores em um só ecossistema digital inteligente.
+          </p>
+          <div class="flex items-center gap-3 text-white">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" class="w-8 h-8 rounded-lg bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] hover:text-[#39BDF5] flex items-center justify-center transition-colors" title="Instagram">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="https://tiktok.com" target="_blank" rel="noreferrer" class="w-8 h-8 rounded-lg bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] hover:text-[#39BDF5] flex items-center justify-center transition-colors" title="TikTok">
+              <i data-lucide="video" class="w-4 h-4"></i>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" class="w-8 h-8 rounded-lg bg-[#071522] border border-[#162C46] hover:border-[#39BDF5] hover:text-[#39BDF5] flex items-center justify-center transition-colors" title="Facebook">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Coluna 2: Navegação Rápida -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white font-['Outfit']">Navegação</h4>
+          <ul class="space-y-2">
+            <li><a href="#inicio" class="hover:text-[#39BDF5] transition-colors">Início</a></li>
+            <li><a href="#como-funciona" class="hover:text-[#39BDF5] transition-colors">Como Funciona</a></li>
+            <li><a href="#categorias" class="hover:text-[#39BDF5] transition-colors">Categorias</a></li>
+            <li><a href="#produtos" class="hover:text-[#39BDF5] transition-colors">Produtos em Destaque</a></li>
+            <li><a href="#empresas" class="hover:text-[#39BDF5] transition-colors">Lojas Parceiras</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Parceiros e Entregadores -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white font-['Outfit']">Para Parceiros</h4>
+          <ul class="space-y-2">
+            <li><button class="btn-open-partner hover:text-[#39BDF5] text-left transition-colors">Cadastrar Empresa</button></li>
+            <li><button class="btn-open-driver hover:text-[#39BDF5] text-left transition-colors">Seja um Entregador</button></li>
+            <li><button class="btn-role-preview hover:text-[#39BDF5] text-left transition-colors" data-role="partner">Portal da Loja (Demo)</button></li>
+            <li><button class="btn-role-preview hover:text-[#39BDF5] text-left transition-colors" data-role="driver">Portal do Entregador (Demo)</button></li>
+            <li><a href="#empresas" class="hover:text-[#39BDF5] transition-colors">Planos de Comissão</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 4: Legal & Suporte -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white font-['Outfit']">Suporte & Legal</h4>
+          <ul class="space-y-2">
+            <li><a href="#suporte" class="hover:text-[#39BDF5] transition-colors">Central de Ajuda</a></li>
+            <li><a href="#suporte" class="hover:text-[#39BDF5] transition-colors">Política de Privacidade</a></li>
+            <li><a href="#suporte" class="hover:text-[#39BDF5] transition-colors">Termos de Uso</a></li>
+            <li><a href="#suporte" class="hover:text-[#39BDF5] transition-colors">Diretrizes de Acessibilidade</a></li>
+            <li><span class="text-[#39BDF5] font-semibold">SAC: (11) 4003-8920</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Copyright e Informações Legais Brasileiras -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#6C829D]">
+        <p>© 2026 WebService Marketplace Tecnologia S.A. CNPJ 48.291.503/0001-89. Todos os direitos reservados.</p>
+        <p class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Sistemas Operacionais 100% Online</span>
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ====================================================================
+       14. DRAWER LATERAL DO CARRINHO DE COMPRAS
+       ==================================================================== -->
+  <div id="cart-overlay" class="fixed inset-0 z-50 modal-overlay hidden transition-opacity duration-300"></div>
+
+  <div 
+    id="cart-drawer" 
+    class="fixed top-0 right-0 z-50 w-full sm:w-[420px] h-full bg-[#0B1B2A] border-l border-[#162C46] shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out"
+  >
+    <!-- Header do Carrinho -->
+    <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-[#39BDF5]"></i>
+        <h3 class="text-base font-bold text-white">Meu Carrinho</h3>
+      </div>
+      <button id="btn-close-cart" class="p-1.5 rounded-lg text-[#B8C7D8] hover:text-white hover:bg-[#162C46]/50">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Lista de Itens do Carrinho -->
+    <div class="flex-grow overflow-y-auto p-5 space-y-3" id="cart-items-container">
+      <div id="cart-empty-state" class="text-center py-16 text-[#B8C7D8]">
+        <div class="w-16 h-16 rounded-full bg-[#071522] border border-[#162C46] flex items-center justify-center mx-auto mb-4 text-[#6C829D]">
+          <i data-lucide="shopping-cart" class="w-8 h-8"></i>
+        </div>
+        <p class="text-base font-bold text-white mb-1">Seu carrinho está vazio</p>
+        <p class="text-xs text-[#B8C7D8] max-w-xs mx-auto mb-6">
+          Adicione itens de seus restaurantes, farmácias ou mercados favoritos para continuar.
+        </p>
+        <button onclick="closeCartDrawer(); document.getElementById('produtos').scrollIntoView({behavior:'smooth'})" class="btn-primary px-6 py-2.5 text-xs font-bold">
+          Explorar Produtos Agora
+        </button>
+      </div>
+
+      <div id="cart-items-list" class="space-y-3">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+    </div>
+
+    <!-- Footer do Carrinho com Cupom e Totais -->
+    <div id="cart-footer" class="p-5 border-t border-[#162C46] bg-[#071522] hidden space-y-4">
+      
+      <!-- Campo de Cupom de Desconto -->
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="coupon-input"
+          placeholder="Código de cupom (ex: WEBSERVICE10)" 
+          class="flex-grow bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white uppercase placeholder-[#6C829D] focus:outline-none"
+        />
+        <button id="btn-apply-coupon" class="btn-outline px-4 py-2 text-xs font-bold shrink-0">
+          Aplicar
+        </button>
+      </div>
+
+      <!-- Resumo Financeiro -->
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between text-[#B8C7D8]">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="font-semibold text-white">R$ 0,00</span>
+        </div>
+        <div class="flex justify-between text-[#B8C7D8]">
+          <span>Taxa de Entrega</span>
+          <span id="cart-shipping" class="font-semibold text-white">R$ 0,00</span>
+        </div>
+        <div id="cart-discount-row" class="flex justify-between text-emerald-400 hidden">
+          <span>Desconto do Cupom</span>
+          <span id="cart-discount" class="font-semibold">-R$ 0,00</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-[#162C46]">
+          <span>Total Estimado</span>
+          <span id="cart-total" class="text-[#39BDF5] font-['Outfit']">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- Botão de Finalização -->
+      <button id="btn-go-to-checkout" class="btn-primary w-full py-3.5 text-sm font-bold shadow-[0_0_20px_rgba(57,189,245,0.3)]">
+        Finalizar Pedido
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       15. MODAL DE CHECKOUT MULTI-ETAPAS (DADOS, PAGAMENTO PIX/CARTÃO)
+       ==================================================================== -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#162C46] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      
+      <!-- Topo do Checkout -->
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-[#39BDF5]"></i>
+          <h3 class="text-base font-bold text-white">Finalização Segura de Pedido</h3>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="checkout-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Barra de Progresso das Etapas -->
+      <div class="grid grid-cols-3 border-b border-[#162C46] text-xs font-semibold text-center">
+        <div id="checkout-nav-step-1" class="py-3 border-b-2 border-[#39BDF5] text-[#39BDF5]">
+          1. Endereço & Dados
+        </div>
+        <div id="checkout-nav-step-2" class="py-3 border-b-2 border-transparent text-[#6C829D]">
+          2. Pagamento
+        </div>
+        <div id="checkout-nav-step-3" class="py-3 border-b-2 border-transparent text-[#6C829D]">
+          3. Confirmação
+        </div>
+      </div>
+
+      <div class="p-6">
+        
+        <!-- ETAPA 1: Endereço de Entrega (Padrão Brasileiro com CEP) -->
+        <div id="checkout-step-1" class="space-y-4">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-[#39BDF5]"></i>
+            Onde devemos entregar seu pedido?
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome Completo *</label>
+              <input type="text" id="checkout-name" value="Mariana Silva Alencar" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Telefone / WhatsApp *</label>
+              <input type="tel" id="checkout-phone" value="(11) 98765-4321" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">CEP (Brasil) *</label>
+              <input type="text" id="checkout-cep" value="01310-200" placeholder="00000-000" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none font-mono" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Logradouro / Rua *</label>
+              <input type="text" id="checkout-street" value="Avenida Paulista" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Número *</label>
+              <input type="text" id="checkout-number" value="1842" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Complemento</label>
+              <input type="text" id="checkout-complement" value="Apto 42B" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Bairro *</label>
+              <input type="text" id="checkout-neighborhood" value="Bela Vista" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Cidade *</label>
+              <input type="text" id="checkout-city" value="São Paulo" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Estado (UF) *</label>
+              <input type="text" id="checkout-state" value="SP" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none font-mono uppercase" />
+            </div>
+          </div>
+
+          <div class="pt-4 flex justify-end">
+            <button id="checkout-next-1" class="btn-primary px-6 py-2.5 text-xs font-bold">
+              Continuar para Pagamento
+            </button>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: Forma de Pagamento (Pix / Cartão) -->
+        <div id="checkout-step-2" class="space-y-4 hidden">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-4 h-4 text-[#39BDF5]"></i>
+            Escolha a forma de pagamento
+          </h4>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="payment-method-option p-4 rounded-xl border border-[#39BDF5] bg-[#39BDF5]/10 cursor-pointer text-center" data-payment-method="pix">
+              <i data-lucide="qr-code" class="w-6 h-6 mx-auto mb-1 text-[#39BDF5]"></i>
+              <span class="text-xs font-bold text-white block">Pix</span>
+              <span class="text-[10px] text-emerald-400">Aprovação Imediata</span>
+            </div>
+            <div class="payment-method-option p-4 rounded-xl border border-[#162C46] bg-[#071522] cursor-pointer text-center hover:border-[#39BDF5]/50" data-payment-method="credit">
+              <i data-lucide="credit-card" class="w-6 h-6 mx-auto mb-1 text-[#B8C7D8]"></i>
+              <span class="text-xs font-bold text-white block">Cartão de Crédito</span>
+              <span class="text-[10px] text-[#6C829D]">Em até 3x s/ juros</span>
+            </div>
+            <div class="payment-method-option p-4 rounded-xl border border-[#162C46] bg-[#071522] cursor-pointer text-center hover:border-[#39BDF5]/50" data-payment-method="debit">
+              <i data-lucide="wallet" class="w-6 h-6 mx-auto mb-1 text-[#B8C7D8]"></i>
+              <span class="text-xs font-bold text-white block">Cartão de Débito</span>
+              <span class="text-[10px] text-[#6C829D]">À vista</span>
+            </div>
+          </div>
+
+          <!-- Caixa Informativa do Pix -->
+          <div id="pix-payment-box" class="p-4 rounded-xl bg-[#071522] border border-[#162C46] space-y-3">
+            <div class="flex items-center gap-3">
+              <!-- QR Code Simulado em SVG -->
+              <div class="w-24 h-24 bg-white p-1 rounded-lg shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" class="w-full h-full text-black">
+                  <path fill="currentColor" d="M10,10 h30 v30 h-30 z M15,15 v20 h20 v-20 z M22,22 h6 v6 h-6 z M60,10 h30 v30 h-30 z M65,15 v20 h20 v-20 z M72,22 h6 v6 h-6 z M10,60 h30 v30 h-30 z M15,65 v20 h20 v-20 z M22,72 h6 v6 h-6 z M50,15 h5 v15 h-5 z M50,45 h25 v5 h-25 z M70,60 h20 v10 h-20 z M60,75 h30 v15 h-30 z"/>
+                </svg>
+              </div>
+              <div class="space-y-1.5 flex-grow">
+                <p class="text-xs font-bold text-white">Chave Pix Copia e Cola:</p>
+                <div class="flex items-center gap-2">
+                  <code id="pix-code-text" class="text-[11px] font-mono text-[#39BDF5] bg-[#030A12] px-2 py-1 rounded border border-[#162C46] truncate max-w-[200px] sm:max-w-xs block">
+                    00020126580014br.gov.bcb.pix0136webservice-marketplace-demo-2026520400005303986
+                  </code>
+                  <button id="btn-copy-pix" class="btn-outline px-2.5 py-1 text-xs shrink-0 font-semibold" title="Copiar código Pix">
+                    Copiar
+                  </button>
+                </div>
+                <p class="text-[10px] text-[#6C829D]">Abra o aplicativo do seu banco e selecione 'Pix Copia e Cola' ou leia o QR Code.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caixa Informativa do Cartão (Oculta por padrão) -->
+          <div id="card-payment-box" class="p-4 rounded-xl bg-[#071522] border border-[#162C46] space-y-3 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Número do Cartão</label>
+              <input type="text" placeholder="0000 0000 0000 0000" class="w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none font-mono" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Validade</label>
+                <input type="text" placeholder="MM/AA" class="w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">CVV</label>
+                <input type="text" placeholder="123" class="w-full bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white focus:outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 flex justify-between">
+            <button id="checkout-back-2" class="btn-outline px-4 py-2 text-xs font-semibold">
+              Voltar para Endereço
+            </button>
+            <button id="checkout-next-2" class="btn-primary px-6 py-2.5 text-xs font-bold">
+              Revisar e Confirmar
+            </button>
+          </div>
+        </div>
+
+        <!-- ETAPA 3: Resumo e Confirmação -->
+        <div id="checkout-step-3" class="space-y-4 hidden">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-[#39BDF5]"></i>
+            Confirme os detalhes do seu pedido
+          </h4>
+
+          <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46] space-y-3 text-xs">
+            <div class="flex justify-between pb-2 border-b border-[#162C46]">
+              <span class="text-[#B8C7D8]">Subtotal dos Itens:</span>
+              <span id="checkout-subtotal" class="font-bold text-white">R$ 0,00</span>
+            </div>
+            <div class="flex justify-between pb-2 border-b border-[#162C46]">
+              <span class="text-[#B8C7D8]">Taxa de Entrega:</span>
+              <span id="checkout-shipping" class="font-bold text-white">R$ 0,00</span>
+            </div>
+            <div class="flex justify-between pb-2 border-b border-[#162C46]">
+              <span class="text-emerald-400">Desconto:</span>
+              <span id="checkout-discount" class="font-bold text-emerald-400">-R$ 0,00</span>
+            </div>
+            <div class="flex justify-between text-base font-extrabold text-white pt-1">
+              <span>Total a Pagar:</span>
+              <span id="checkout-total" class="text-[#39BDF5] font-['Outfit']">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-[#39BDF5]/10 border border-[#39BDF5]/30 flex items-center gap-2.5 text-xs text-[#39BDF5]">
+            <i data-lucide="lock" class="w-4 h-4 shrink-0"></i>
+            <span>Transação em ambiente de demonstração com proteção contra fraudes.</span>
+          </div>
+
+          <div class="pt-4 flex justify-between">
+            <button id="checkout-back-3" class="btn-outline px-4 py-2 text-xs font-semibold">
+              Voltar ao Pagamento
+            </button>
+            <button id="btn-confirm-order" class="btn-primary px-8 py-3 text-sm font-bold shadow-[0_0_25px_rgba(57,189,245,0.4)]">
+              Confirmar e Rastrear Pedido
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       16. MODAL DO RASTREADOR DE PEDIDOS EM TEMPO REAL (STEPPER INTERATIVO)
+       ==================================================================== -->
+  <div id="order-tracker-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/40 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(57,189,245,0.3)] flex flex-col">
+      
+      <!-- Topo com Status e ID do Pedido -->
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-[#39BDF5] font-bold">Acompanhamento ao Vivo</span>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            Pedido <span id="tracker-order-id" class="font-mono text-[#39BDF5]">#CON-0000</span>
+          </h3>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="order-tracker-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        
+        <!-- Previsão de Chegada -->
+        <div class="bg-gradient-to-r from-[#087BD4]/20 to-[#39BDF5]/15 p-4 rounded-xl border border-[#39BDF5]/30 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#39BDF5] text-[#030A12] flex items-center justify-center font-bold">
+              <i data-lucide="bike" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs text-[#B8C7D8]">Previsão de Entrega:</span>
+              <p id="tracker-eta" class="text-base font-black text-white font-['Outfit']">25 - 35 minutos</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-[#6C829D]">Total do Pedido:</span>
+            <p id="tracker-order-total" class="text-sm font-bold text-[#39BDF5]">R$ 0,00</p>
+          </div>
+        </div>
+
+        <!-- Stepper Visual com os 4 Estágios do Canvas -->
+        <div id="tracker-steps-container" class="space-y-4 relative pl-2">
+          
+          <div class="flex items-start gap-4">
+            <div id="step-circle-1" class="w-9 h-9 rounded-full bg-emerald-500 text-[#030A12] flex items-center justify-center font-bold text-sm shrink-0">
+              <i data-lucide="check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white">1. Pedido Confirmado & Pago</p>
+              <p class="text-[11px] text-[#B8C7D8]">Pagamento processado com sucesso via Pix/Cartão.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div id="step-circle-2" class="w-9 h-9 rounded-full bg-[#39BDF5] text-[#030A12] flex items-center justify-center font-bold text-sm shrink-0">
+              2
+            </div>
+            <div>
+              <p id="step-text-2" class="text-xs font-bold text-[#39BDF5]">2. Estabelecimento em Preparo</p>
+              <p class="text-[11px] text-[#B8C7D8]">A loja parceira está separando e embalando seus produtos.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div id="step-circle-3" class="w-9 h-9 rounded-full bg-[#071522] border border-[#162C46] text-[#6C829D] flex items-center justify-center font-bold text-sm shrink-0">
+              3
+            </div>
+            <div>
+              <p id="step-text-3" class="text-xs font-semibold text-[#6C829D]">3. Entregador a Caminho</p>
+              <p class="text-[11px] text-[#6C829D]">Em trânsito com destino ao seu endereço.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div id="step-circle-4" class="w-9 h-9 rounded-full bg-[#071522] border border-[#162C46] text-[#6C829D] flex items-center justify-center font-bold text-sm shrink-0">
+              4
+            </div>
+            <div>
+              <p id="step-text-4" class="text-xs font-semibold text-[#6C829D]">4. Pedido Entregue</p>
+              <p class="text-[11px] text-[#6C829D]">Entrega finalizada na portaria/porta.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dados do Entregador Alocado -->
+        <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80" class="w-11 h-11 rounded-full object-cover border border-[#39BDF5]" />
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span id="tracker-driver-name" class="text-xs font-bold text-white">Marcos Vinicius</span>
+                <span class="text-[10px] bg-amber-400/20 text-amber-400 px-1.5 py-0.2 rounded font-bold">★ 4.9</span>
+              </div>
+              <p id="tracker-driver-vehicle" class="text-[11px] text-[#6C829D]">Honda CG 160 Fan • Placa BRA-2E19</p>
+            </div>
+          </div>
+          <button onclick="showToast('Ligando para o entregador parceiro...', 'info')" class="w-8 h-8 rounded-full bg-[#0B1B2A] border border-[#162C46] text-[#39BDF5] hover:border-[#39BDF5] flex items-center justify-center">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Botão Interativo de Demonstração -->
+        <div class="pt-2 flex justify-between gap-3">
+          <button id="btn-advance-order" class="btn-primary w-full py-2.5 text-xs font-bold">
+            Simular Avanço de Etapa da Entrega
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       17. MODAL DE AUTENTICAÇÃO (LOGIN / REGISTRO COM ABAS)
+       ==================================================================== -->
+  <div id="auth-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#162C46] rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-[#39BDF5] text-[#030A12] font-black text-xs flex items-center justify-center">
+            &lt;/&gt;
+          </div>
+          <span class="font-bold text-white text-base">Acesse sua Conta</span>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="auth-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Abas de Navegação Auth -->
+      <div class="grid grid-cols-2 border-b border-[#162C46] text-xs font-bold text-center">
+        <button id="auth-tab-login" class="py-3 border-b-2 border-[#39BDF5] text-[#39BDF5]" onclick="switchAuthTab('login')">
+          Já sou cadastrado
+        </button>
+        <button id="auth-tab-register-client" class="py-3 border-b-2 border-transparent text-[#B8C7D8]" onclick="switchAuthTab('register-client')">
+          Criar Nova Conta
+        </button>
+      </div>
+
+      <div class="p-6">
+        
+        <!-- Formulário de Login -->
+        <form id="auth-panel-login" class="space-y-4" onsubmit="event.preventDefault(); showToast('Login efetuado com sucesso!'); closeModal('auth-modal');">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">E-mail</label>
+            <input type="email" required value="cliente@exemplo.com.br" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-semibold text-[#B8C7D8]">Senha</label>
+              <button type="button" class="text-[11px] text-[#39BDF5] hover:underline" onclick="switchAuthTab('recover')">Esqueceu a senha?</button>
+            </div>
+            <input type="password" required value="••••••••" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <button type="submit" class="btn-primary w-full py-3 text-xs font-bold">
+            Entrar na Plataforma
+          </button>
+
+          <div class="text-center pt-2">
+            <span class="text-xs text-[#6C829D]">Acesso rápido para parceiros:</span>
+            <div class="flex justify-center gap-2 mt-2">
+              <button type="button" class="btn-open-partner text-xs text-[#39BDF5] hover:underline" onclick="closeModal('auth-modal'); openPartnerModal();">Cadastrar Empresa</button>
+              <span class="text-[#6C829D]">•</span>
+              <button type="button" class="btn-open-driver text-xs text-[#39BDF5] hover:underline" onclick="closeModal('auth-modal'); openDriverModal();">Cadastrar Entregador</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Formulário de Novo Registro de Cliente -->
+        <form id="auth-panel-register-client" class="space-y-4 hidden" onsubmit="event.preventDefault(); showToast('Conta criada com sucesso! Bem-vindo ao WebService.'); closeModal('auth-modal');">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome Completo</label>
+            <input type="text" required placeholder="Seu nome" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">E-mail</label>
+            <input type="email" required placeholder="seuemail@exemplo.com" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Telefone (WhatsApp)</label>
+            <input type="tel" required placeholder="(11) 98765-4321" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Senha Segura</label>
+            <input type="password" required placeholder="Mínimo 8 caracteres" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+
+          <button type="submit" class="btn-primary w-full py-3 text-xs font-bold">
+            Criar Minha Conta Grátis
+          </button>
+        </form>
+
+        <!-- Painel de Recuperação de Senha -->
+        <form id="auth-panel-recover" class="space-y-4 hidden" onsubmit="event.preventDefault(); showToast('Instruções de recuperação enviadas para seu e-mail!'); switchAuthTab('login');">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">E-mail Cadastrado</label>
+            <input type="email" required placeholder="seuemail@exemplo.com" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+          <button type="submit" class="btn-primary w-full py-3 text-xs font-bold">
+            Recuperar Senha
+          </button>
+          <button type="button" class="btn-outline w-full py-2.5 text-xs font-semibold" onclick="switchAuthTab('login')">
+            Voltar ao Login
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       18. MODAL DE CADASTRO DE EMPRESA PARCEIRA (B2B)
+       ==================================================================== -->
+  <div id="partner-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/40 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-[#39BDF5] font-bold">Para Negócios</span>
+          <h3 class="text-base font-bold text-white">Cadastre sua Empresa no WebService</h3>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="partner-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="partner-form" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome Fantasia da Empresa *</label>
+          <input type="text" required placeholder="Ex: Pizzaria Bella Italia" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">CNPJ *</label>
+            <input type="text" required placeholder="00.000.000/0001-00" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Ramo de Atividade *</label>
+            <select class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none">
+              <option>Restaurante / Alimentação</option>
+              <option>Supermercado / Mercearia</option>
+              <option>Farmácia / Saúde</option>
+              <option>Roupas / Moda</option>
+              <option>Eletrônicos / Informática</option>
+              <option>Cosméticos / Beleza</option>
+              <option>Casa / Utilidades</option>
+              <option>Outros Negócios</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Cidade e Estado *</label>
+            <input type="text" required placeholder="Ex: São Paulo / SP" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Plano Pretendido</label>
+            <select id="partner-plan-select" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none">
+              <option value="Plano Essencial">Plano Essencial (8% comissão, sem mensalidade)</option>
+              <option value="Plano Crescimento Pro" selected>Plano Crescimento Pro (5% comissão + R$ 79,90/mês)</option>
+              <option value="Plano Corporativo & Redes">Plano Corporativo (3,5% comissão + R$ 199,00/mês)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome do Responsável *</label>
+            <input type="text" required placeholder="Seu nome" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">WhatsApp Comercial *</label>
+            <input type="tel" required placeholder="(11) 98765-4321" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 text-xs font-bold shadow-[0_0_20px_rgba(57,189,245,0.3)]">
+          Enviar Solicitação de Parceria
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       19. MODAL DE CADASTRO DE ENTREGADOR PARCEIRO
+       ==================================================================== -->
+  <div id="driver-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/40 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-[#39BDF5] font-bold">Oportunidade</span>
+          <h3 class="text-base font-bold text-white">Quero ser um Entregador Parceiro</h3>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="driver-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="driver-form" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Nome Completo *</label>
+          <input type="text" required placeholder="Seu nome" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">CPF *</label>
+            <input type="text" required placeholder="000.000.000-00" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Veículo de Entrega *</label>
+            <select class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none">
+              <option>Motocicleta (Moto)</option>
+              <option>Bicicleta / Bike Elétrica</option>
+              <option>Carro / Utilitário</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Cidade onde deseja rodar *</label>
+            <input type="text" required placeholder="Ex: São Paulo / SP" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#B8C7D8] mb-1">Número de WhatsApp *</label>
+            <input type="tel" required placeholder="(11) 98765-4321" class="w-full bg-[#071522] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 text-xs font-bold shadow-[0_0_20px_rgba(57,189,245,0.3)]">
+          Concluir Pré-Cadastro de Entregador
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       20. MODAL DE VISUALIZAÇÃO RÁPIDA DE PRODUTO (QUICK VIEW)
+       ==================================================================== -->
+  <div id="quick-view-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#162C46] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <span class="text-xs font-bold text-[#39BDF5]">Detalhes do Item</span>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="quick-view-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="rounded-xl overflow-hidden bg-[#071522] border border-[#162C46] h-64">
+          <img id="qv-image" src="" alt="Produto" class="w-full h-full object-cover" />
+        </div>
+
+        <div class="flex flex-col justify-between space-y-4">
+          <div>
+            <span id="qv-business" class="text-xs text-[#39BDF5] font-semibold">Nome da Loja</span>
+            <h3 id="qv-title" class="text-xl font-bold text-white mt-1">Título do Produto</h3>
+            <div class="flex items-center gap-1.5 my-2">
+              <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i>
+              <span id="qv-rating" class="text-xs font-bold text-white">4.9</span>
+              <span class="text-[11px] text-[#6C829D]">(Avaliações reais de clientes)</span>
+            </div>
+            <p id="qv-desc" class="text-xs text-[#B8C7D8] leading-relaxed">Descrição detalhada do produto.</p>
+          </div>
+
+          <div>
+            <div class="flex items-baseline gap-2 mb-4">
+              <span id="qv-price" class="text-2xl font-black text-white font-['Outfit']">R$ 0,00</span>
+              <span id="qv-original-price" class="text-xs text-[#6C829D] line-through"></span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex items-center bg-[#071522] border border-[#162C46] rounded-xl px-2 py-1.5">
+                <button onclick="let inp = document.getElementById('qv-qty-input'); inp.value = Math.max(1, parseInt(inp.value,10)-1)" class="px-2 text-sm text-[#B8C7D8] hover:text-white">-</button>
+                <input id="qv-qty-input" type="number" value="1" min="1" class="w-10 bg-transparent text-center text-xs font-bold text-white focus:outline-none" />
+                <button onclick="let inp = document.getElementById('qv-qty-input'); inp.value = parseInt(inp.value,10)+1" class="px-2 text-sm text-[#B8C7D8] hover:text-white">+</button>
+              </div>
+
+              <button id="qv-add-btn" class="btn-primary flex-grow py-3 text-xs font-bold">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                Adicionar ao Carrinho
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       21. MODAL ROLE SWITCHER: PAINEL DA EMPRESA PARCEIRA (BUSINESS CANVAS)
+       ==================================================================== -->
+  <div id="role-partner-preview-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/50 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(57,189,245,0.3)] flex flex-col">
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-[#39BDF5] text-[#030A12] flex items-center justify-center font-bold">
+            <i data-lucide="store" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] text-[#39BDF5] uppercase font-bold tracking-wider">Demonstração do Canvas de Negócios</span>
+            <h3 class="text-base font-bold text-white">Painel da Empresa Parceira (Bistrô & Burger)</h3>
+          </div>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="role-partner-preview-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <!-- 3 Métricas do Dia (Canvas: Vendas & Comissão) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46]">
+            <span class="text-xs text-[#6C829D]">Faturamento Hoje:</span>
+            <p class="text-2xl font-black text-white font-['Outfit'] mt-1">R$ 1.480,50</p>
+            <span class="text-[10px] text-emerald-400 font-semibold">+22% vs ontem</span>
+          </div>
+          <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46]">
+            <span class="text-xs text-[#6C829D]">Pedidos Concluídos:</span>
+            <p class="text-2xl font-black text-[#39BDF5] font-['Outfit'] mt-1">26 pedidos</p>
+            <span class="text-[10px] text-[#B8C7D8]">Tempo médio de preparo: 14 min</span>
+          </div>
+          <div class="p-4 rounded-xl bg-[#071522] border border-[#162C46]">
+            <span class="text-xs text-[#6C829D]">Comissão WebService (5%):</span>
+            <p class="text-2xl font-black text-amber-400 font-['Outfit'] mt-1">R$ 74,02</p>
+            <span class="text-[10px] text-[#B8C7D8]">Líquido a receber: R$ 1.406,48</span>
+          </div>
+        </div>
+
+        <!-- Pedidos em Tempo Real na Cozinha -->
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 flex items-center justify-between">
+            <span>Fila de Pedidos em Aberto</span>
+            <span class="text-xs text-[#39BDF5] font-normal">Atualizado há 15 segundos</span>
+          </h4>
+          <div class="space-y-2">
+            <div class="p-3 rounded-xl bg-[#071522] border border-[#39BDF5]/30 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-white">#8943 • 2x Burger Black Angus + Batata</span>
+                <p class="text-[11px] text-[#B8C7D8]">Cliente: Juliana M. • Bairro Jardins</p>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
+                Preparando (9 min)
+              </span>
+            </div>
+            <div class="p-3 rounded-xl bg-[#071522] border border-[#162C46] flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-white">#8944 • 1x Combo Pizza Margherita</span>
+                <p class="text-[11px] text-[#B8C7D8]">Cliente: Rafael C. • Entregador alocado</p>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full bg-[#39BDF5]/20 text-[#39BDF5] font-bold border border-[#39BDF5]/30">
+                Aguardando Coleta
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#071522] border border-[#162C46] text-xs text-[#B8C7D8]">
+          <strong class="text-white">Alinhamento com o Modelo de Negócio:</strong> Esta tela demonstra como as empresas parceiras recebem pedidos de forma centralizada e sem atrito, dispensando a necessidade de desenvolverem software proprietário.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       22. MODAL ROLE SWITCHER: PAINEL DO ENTREGADOR (BUSINESS CANVAS)
+       ==================================================================== -->
+  <div id="role-driver-preview-modal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+    <div class="bg-[#0B1B2A] border border-[#39BDF5]/50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(57,189,245,0.3)] flex flex-col">
+      <div class="p-5 border-b border-[#162C46] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-[#39BDF5] text-[#030A12] flex items-center justify-center font-bold">
+            <i data-lucide="bike" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] text-[#39BDF5] uppercase font-bold tracking-wider">Demonstração do Canvas de Negócios</span>
+            <h3 class="text-base font-bold text-white">App do Entregador (Marcos Vinicius)</h3>
+          </div>
+        </div>
+        <button class="btn-close-modal p-1 text-[#B8C7D8] hover:text-white" data-modal-id="role-driver-preview-modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <div class="bg-[#071522] p-4 rounded-xl border border-[#162C46] flex items-center justify-between">
+          <div>
+            <span class="text-xs text-[#6C829D]">Ganhos acumulados hoje:</span>
+            <p class="text-2xl font-black text-emerald-400 font-['Outfit']">R$ 138,50</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-[#6C829D]">Corridas concluídas:</span>
+            <p class="text-xl font-bold text-white">9 entregas</p>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-2">Chamada de Corrida Disponível</h4>
+          <div class="p-4 rounded-xl bg-gradient-to-br from-[#071522] to-[#0B1B2A] border border-[#39BDF5]/40 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-[#39BDF5]">Valor Líquido da Corrida:</span>
+              <span class="text-lg font-black text-emerald-400 font-['Outfit']">R$ 14,80</span>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-[#B8C7D8]">
+              <div class="flex items-center gap-2">
+                <i data-lucide="store" class="w-3.5 h-3.5 text-[#39BDF5]"></i>
+                <span>Coleta: Drogaria Vital & Bem-Estar (1,1 km de você)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Entrega: Rua Augusta, 1200 (2,4 km de rota)</span>
+              </div>
+            </div>
+
+            <button onclick="showToast('Corrida aceita com sucesso! Rota enviada para o GPS.'); closeModal('role-driver-preview-modal');" class="btn-primary w-full py-2.5 text-xs font-bold">
+              Aceitar Corrida Agora
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#071522] border border-[#162C46] text-xs text-[#B8C7D8]">
+          <strong class="text-white">Alinhamento com o Modelo de Negócio:</strong> Demonstra as oportunidades de renda para os entregadores autônomos com informações transparentes de valores e rotas seguras.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       23. WIDGET FLUTUANTE DE SUPORTE VIA CHAT (INTERATIVO)
+       ==================================================================== -->
+  <div id="chat-widget-container" class="fixed bottom-6 right-6 z-40">
+    
+    <!-- Botão Flutuante Circular do Chat -->
+    <button 
+      id="chat-widget-toggle"
+      class="w-14 h-14 rounded-full bg-gradient-to-tr from-[#087BD4] to-[#39BDF5] text-[#030A12] flex items-center justify-center shadow-[0_0_25px_rgba(57,189,245,0.45)] hover:scale-105 active:scale-95 transition-transform relative group"
+      title="Suporte WebService"
+    >
+      <i data-lucide="message-square" class="w-6 h-6"></i>
+      <span class="pulse-indicator absolute top-1 right-1"></span>
+    </button>
+
+    <!-- Janela de Conversa do Chat Flutuante -->
+    <div 
+      id="chat-widget-window" 
+      class="hidden absolute bottom-16 right-0 w-80 sm:w-96 bg-[#0B1B2A] border border-[#39BDF5]/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+    >
+      <!-- Topo do Chat -->
+      <div class="p-4 bg-gradient-to-r from-[#071522] to-[#0B1B2A] border-b border-[#162C46] flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="relative">
+            <div class="w-8 h-8 rounded-full bg-[#39BDF5] text-[#030A12] font-black flex items-center justify-center text-xs">
+              &lt;/&gt;
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0B1B2A] absolute -bottom-0.5 -right-0.5"></span>
+          </div>
+          <div>
+            <h5 class="text-xs font-bold text-white">Assistente WebService</h5>
+            <span class="text-[10px] text-emerald-400 font-medium">Online agora</span>
+          </div>
+        </div>
+        <button id="chat-widget-close" class="p-1 text-[#B8C7D8] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Mensagens da Conversa -->
+      <div id="chat-widget-messages" class="p-4 h-64 overflow-y-auto space-y-3 bg-[#030A12]/80">
+        <div class="text-left">
+          <div class="inline-block bg-[#071522] border border-[#162C46] text-[#B8C7D8] text-xs px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%]">
+            Olá! Sou o assistente virtual do WebService. Como posso te ajudar hoje?
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          <button onclick="document.getElementById('chat-widget-input').value = 'Como rastrear meu pedido?'; document.getElementById('chat-widget-form').dispatchEvent(new Event('submit'))" class="text-[11px] bg-[#071522] text-[#39BDF5] border border-[#39BDF5]/30 px-2 py-1 rounded-full hover:bg-[#39BDF5]/20">
+            Rastrear pedido
+          </button>
+          <button onclick="document.getElementById('chat-widget-input').value = 'Quero cadastrar minha empresa'; document.getElementById('chat-widget-form').dispatchEvent(new Event('submit'))" class="text-[11px] bg-[#071522] text-[#39BDF5] border border-[#39BDF5]/30 px-2 py-1 rounded-full hover:bg-[#39BDF5]/20">
+            Cadastrar loja
+          </button>
+        </div>
+      </div>
+
+      <!-- Input de Envio de Mensagem -->
+      <form id="chat-widget-form" class="p-3 bg-[#071522] border-t border-[#162C46] flex gap-2">
+        <input 
+          type="text" 
+          id="chat-widget-input"
+          placeholder="Digite sua dúvida..." 
+          class="flex-grow bg-[#0B1B2A] border border-[#162C46] focus:border-[#39BDF5] rounded-xl py-2 px-3 text-xs text-white placeholder-[#6C829D] focus:outline-none"
+        />
+        <button type="submit" class="p-2 rounded-xl bg-[#39BDF5] text-[#030A12] hover:bg-[#62caff] transition-colors">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Container de Notificações Toast -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts da Aplicação -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
